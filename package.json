@@ -6,13 +6,19 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate-client": "openapi-ts --input ./spec/server.yaml --output ./client --client @hey-api/client-axios"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@hey-api/client-axios": "^0.7.0",
     "swagger-typescript-api": "^13.0.28"
+  },
+  "devDependencies": {
+    "@hey-api/client-fetch": "^0.10.0",
+    "@hey-api/openapi-ts": "^0.66.3"
   }
 }
