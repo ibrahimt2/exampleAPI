@@ -1,0 +1,114 @@
+openapi: "3.0.3"
+info:
+  title: Todo API
+  version: "1.0.0"
+  description: |
+    A simple Todo API that demonstrates endpoints for managing todos.
+    This spec includes custom extensions like `x-operationname` to guide client generation.
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /todos:
+    get:
+      summary: Retrieve a list of todos
+      operationId: getTodos
+      x-operationname: listTodos
+      responses:
+        '200':
+          description: A JSON array of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Todo"
+    post:
+      summary: Create a new todo
+      operationId: createTodo
+      x-operationname: addTodo
+      requestBody:
+        description: The todo to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewTodo"
+      responses:
+        '201':
+          description: The created todo object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+  /todos/{todoId}:
+    parameters:
+      - name: todoId
+        in: path
+        description: ID of the todo to operate on
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Retrieve a specific todo by ID
+      operationId: getTodoById
+      x-operationname: fetchTodo
+      responses:
+        '200':
+          description: A single todo item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+        '404':
+          description: Todo not found
+    put:
+      summary: Update a specific todo by ID
+      operationId: updateTodo
+      x-operationname: modifyTodo
+      requestBody:
+        description: Updated todo information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Todo"
+      responses:
+        '200':
+          description: The updated todo object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+        '400':
+          description: Invalid input supplied
+        '404':
+          description: Todo not found
+components:
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "Buy groceries"
+        completed:
+          type: boolean
+          example: false
+      required:
+        - id
+        - title
+        - completed
+    NewTodo:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Buy groceries"
+        completed:
+          type: boolean
+          example: false
+      required:
+        - title
