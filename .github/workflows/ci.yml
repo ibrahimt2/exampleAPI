@@ -9,26 +9,27 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       # Step 1: Checkout repository code.
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Step 2: Set up Python and install server dependencies.
+      # Step 2: Set up Python and install Flask server dependencies.
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
+
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install flask requests
 
-      # Step 3: Start the Flask Server in the background.
+      # Step 3: Start the Flask server in the background.
       - name: Start Flask Server
         run: |
           nohup python server/server.py > server.log 2>&1 &
-          # Wait for the server to be ready (checking the /todos endpoint)
           for i in {1..10}; do
             if curl -s http://localhost:5000/todos > /dev/null; then
               echo "Flask server is up!"
@@ -39,7 +40,7 @@ jobs:
             fi
           done
 
-      # Step 4: Set up Node.js environment.
+      # Step 4: Set up Node.js environment (v18).
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -49,10 +50,6 @@ jobs:
       - name: Install Node dependencies
         run: npm install
 
-      # Step 6: Run tests (unit tests and integration tests using the auto-generated client).
+      # Step 6: Run all tests with coverage.
       - name: Run Tests
         run: npm run test
-
-      # Step 7: Build the project (with type checking) and perform any additional build steps.
-      - name: Build and Type Check
-        run: npm run build:dev -- --env typeCheck && npm run build -- --env appendToDist

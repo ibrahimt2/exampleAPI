@@ -7,7 +7,9 @@
   },
   "scripts": {
     "test": "jest --coverage",
-    "generate-client": "openapi-ts --input ./spec/server.yaml --output ./client --client @hey-api/client-axios"
+    "generate-client": "openapi-ts --input ./spec/server.yaml --output ./client --client @hey-api/client-axios",
+    "build:dev": "tsc --noEmit",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
