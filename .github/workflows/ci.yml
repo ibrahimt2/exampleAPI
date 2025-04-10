@@ -27,7 +27,7 @@ jobs:
       # Step 3: Start the Flask Server in the background.
       - name: Start Flask Server
         run: |
-          nohup python server.py > server.log 2>&1 &
+          nohup python server/server.py > server.log 2>&1 &
           # Wait for the server to be ready (checking the /todos endpoint)
           for i in {1..10}; do
             if curl -s http://localhost:5000/todos > /dev/null; then
