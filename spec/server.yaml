@@ -6,7 +6,7 @@ info:
     A simple Todo API that demonstrates endpoints for managing todos.
     This spec includes custom extensions like `x-operationname` to guide client generation.
 servers:
-  - url: https://api.example.com/v1
+  - url: http://localhost:5000
 paths:
   /todos:
     get:
