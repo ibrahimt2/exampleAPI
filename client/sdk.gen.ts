@@ -65,3 +65,17 @@ export const updateTodo = <ThrowOnError extends boolean = false>(options: Option
         }
     });
 };
+
+/**
+ * Update a specific todo by ID
+ */
+export const deleteTodo = <ThrowOnError extends boolean = false>(options: Options<UpdateTodoData, ThrowOnError>) => {
+    return (options.client ?? _heyApiClient).delete<UpdateTodoResponse, unknown, ThrowOnError>({
+        url: '/todos/{todoId}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options?.headers
+        }
+    });
+};
