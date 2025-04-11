@@ -11,13 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repository code.
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # <-- fetch full history and all file versions
+          fetch-depth: 0
 
-      # Step 2: Set up Python and install Flask server dependencies.
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -42,13 +40,11 @@ jobs:
             fi
           done
 
-      # Step 4: Set up Node.js environment (v18).
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '18'
 
-      # Step 5: Install Node dependencies.
       - name: Install Node dependencies
         run: npm install
 
@@ -57,10 +53,9 @@ jobs:
           npm run generate-client
           if ! git diff --exit-code ./client; then
             echo "Client is out of date. Please run 'npm run generate-client'."
-            exit 1x
+            exit 1
           fi
 
-      # Step 6: Run all tests with coverage.
       - name: Run Tests
         run: npm run test
 
@@ -71,66 +66,32 @@ jobs:
         run: |
           curl -sSL https://raw.githubusercontent.com/Tufin/oasdiff/main/install.sh | sh
 
-      - name: Fetch origin/main
-        run: |
-          git fetch origin main
-
-      
-      - name: Fetch previous OpenAPI spec
+      - name: Fetch and compare OpenAPI specs
         run: |
           git fetch origin main
           git show origin/main:spec/server.yaml > old.yaml
           cp spec/server.yaml new.yaml
 
-      - name: Fail build on breaking changes
-        run: |
-          echo "🔍 Running oasdiff breaking check..."
-          oasdiff breaking old.yaml new.yaml --fail-on-diff -f text
-
-      - name: Compare OpenAPI specs for breaking changes
-        id: breaking-check
-        run: |
-          set -e
-          git fetch origin main
-          git show origin/main:spec/server.yaml > old.yaml
-          cp spec/server.yaml new.yaml
-
-          if oasdiff breaking old.yaml new.yaml -f markdown > openapi-breaking-changes.md; then
-            echo "has_breaking=false" >> $GITHUB_OUTPUT
-          else
-            echo "has_breaking=true" >> $GITHUB_OUTPUT
-          fi
-        
-      - name: Debug OpenAPI versions & content
-        run: |
-          echo "OLD VERSION:"
-          yq '.info.version' old.yaml
-          echo "---"
-          cat old.yaml
-
-          echo "NEW VERSION:"
-          yq '.info.version' new.yaml
-          echo "---"
-          cat new.yaml
-
-      - name: Validate version bump if breaking changes
-        if: steps.breaking-check.outputs.has_breaking == 'true'
-        run: |
           OLD_VERSION=$(yq '.info.version' old.yaml)
           NEW_VERSION=$(yq '.info.version' new.yaml)
           OLD_MAJOR=$(echo "$OLD_VERSION" | cut -d. -f1)
           NEW_MAJOR=$(echo "$NEW_VERSION" | cut -d. -f1)
 
-          echo "🚨 Breaking changes detected!"
-          echo "Old version: $OLD_VERSION"
-          echo "New version: $NEW_VERSION"
-
-          if [ "$NEW_MAJOR" -le "$OLD_MAJOR" ]; then
-            echo "❌ Major version must be bumped for breaking changes!"
-            cat openapi-breaking-changes.md
-            exit 1
+          echo "🔍 Running oasdiff breaking check..."
+          if oasdiff breaking old.yaml new.yaml -f text > openapi-breaking-changes.md; then
+            echo "✅ No breaking changes"
           else
-            echo "✅ Breaking changes allowed — major version bumped."
+            echo "🚨 Breaking changes detected!"
+            echo "Old version: $OLD_VERSION"
+            echo "New version: $NEW_VERSION"
+
+            if [ "$NEW_MAJOR" -le "$OLD_MAJOR" ]; then
+              echo "❌ Major version must be bumped for breaking changes!"
+              cat openapi-breaking-changes.md
+              exit 1
+            else
+              echo "✅ Breaking changes allowed — major version bumped."
+            fi
           fi
 
       - name: Generate OpenAPI changelog
