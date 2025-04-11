@@ -9,7 +9,10 @@
     "test": "jest --coverage",
     "generate-client": "openapi-ts --input ./spec/server.yaml --output ./client --client @hey-api/client-axios",
     "build:dev": "tsc --noEmit",
-    "build": "tsc"
+    "build": "tsc",
+    "sync-version": "node scripts/set_npm_version.js",
+    "check-version": "node scripts/check_versions_match.js",
+    "prepublishOnly": "npm run sync-version && npm run build"
   },
   "keywords": [],
   "author": "",
