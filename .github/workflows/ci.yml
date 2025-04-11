@@ -121,6 +121,12 @@ jobs:
             echo "✅ Breaking changes allowed — major version bumped."
           fi
 
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Check version sync
+        run: node scripts/check_versions_match.js
+
       - name: Generate OpenAPI changelog
         run: |
           oasdiff changelog old.yaml new.yaml -f markdown > openapi-changelog.md || true
