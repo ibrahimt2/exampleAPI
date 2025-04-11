@@ -25,10 +25,10 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: 📦 Sync and publish NPM package
-        working-directory: client
         run: |
           npm install
           npm run sync-version
+          cd ../
           npm publish
 
       - name: 🐍 Set up Python
