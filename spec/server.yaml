@@ -94,13 +94,11 @@ components:
         title:
           type: string
           example: "Buy groceries"
-        completed:
-          type: boolean
-          example: false
+        # 🚨 BREAKING: Removed 'completed' field
       required:
         - id
         - title
-        - completed
+        # 🚨 BREAKING: 'completed' also removed from required
     NewTodo:
       type: object
       properties:
