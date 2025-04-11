@@ -14,8 +14,6 @@ jobs:
       # Step 1: Checkout repository code.
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
 
       # Step 2: Set up Python and install Flask server dependencies.
       - name: Set up Python
@@ -70,6 +68,22 @@ jobs:
       - name: Install oasdiff
         run: |
           curl -sSL https://raw.githubusercontent.com/Tufin/oasdiff/main/install.sh | sh
+
+      - name: Fetch origin/main
+        run: |
+          git fetch origin main
+
+      - name: Debug OpenAPI versions & content
+        run: |
+          echo "OLD VERSION:"
+          yq '.info.version' old.yaml
+          echo "---"
+          cat old.yaml
+
+          echo "NEW VERSION:"
+          yq '.info.version' new.yaml
+          echo "---"
+          cat new.yaml
 
       - name: Compare OpenAPI specs for breaking changes
         run: |
