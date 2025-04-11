@@ -46,7 +46,7 @@ jobs:
           cd client
           npm run sync-version
           cd ..
-          npm publish
+          npm publish --access public
 
       - name: 🐍 Build Python package
         working-directory: server
