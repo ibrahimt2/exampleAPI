@@ -83,7 +83,7 @@ jobs:
           git show origin/main:spec/server.yaml > old.yaml
           cp spec/server.yaml new.yaml
 
-          if oasdiff breaking old.yaml new.yaml -f markdown > openapi-breaking-changes.md; then
+          if oasdiff breaking old.yaml new.yaml -o ERR -f markdown > openapi-breaking-changes.md; then
             echo "has_breaking=false" >> $GITHUB_OUTPUT
           else
             echo "has_breaking=true" >> $GITHUB_OUTPUT
