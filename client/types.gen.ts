@@ -46,6 +46,34 @@ export type CreateTodoResponses = {
 
 export type CreateTodoResponse = CreateTodoResponses[keyof CreateTodoResponses];
 
+export type DeleteTodoData = {
+    body?: never;
+    path: {
+        /**
+         * ID of the todo to operate on
+         */
+        todoId: number;
+    };
+    query?: never;
+    url: '/todos/{todoId}';
+};
+
+export type DeleteTodoErrors = {
+    /**
+     * Todo not found
+     */
+    404: unknown;
+};
+
+export type DeleteTodoResponses = {
+    /**
+     * Todo deleted successfully (no content)
+     */
+    204: void;
+};
+
+export type DeleteTodoResponse = DeleteTodoResponses[keyof DeleteTodoResponses];
+
 export type GetTodoByIdData = {
     body?: never;
     path: {
