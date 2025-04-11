@@ -75,6 +75,18 @@ jobs:
         run: |
           git fetch origin main
 
+      
+      - name: Fetch previous OpenAPI spec
+        run: |
+          git fetch origin main
+          git show origin/main:spec/server.yaml > old.yaml
+          cp spec/server.yaml new.yaml
+
+      - name: Fail build on breaking changes
+        run: |
+          echo "🔍 Running oasdiff breaking check..."
+          oasdiff breaking old.yaml new.yaml --fail-on-diff -f text
+
       - name: Compare OpenAPI specs for breaking changes
         id: breaking-check
         run: |
