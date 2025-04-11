@@ -59,11 +59,11 @@ jobs:
           fi
 
       # Step 6: Run all tests with coverage.
-      # - name: Run Tests
-      #   run: npm run test
+      - name: Run Tests
+        run: npm run test
 
-      # - name: Run typecheck
-      #   run: npm run build:dev
+      - name: Run typecheck
+        run: npm run build:dev
 
       - name: Install oasdiff
         run: |
