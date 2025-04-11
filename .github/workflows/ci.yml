@@ -75,6 +75,13 @@ jobs:
         run: |
           git fetch origin main
 
+      - name: Compare OpenAPI specs for breaking changes
+        run: |
+          git show origin/main:spec/server.yaml > old.yaml
+          cp spec/server.yaml new.yaml
+          oasdiff breaking old.yaml new.yaml -f markdown > openapi-breaking-changes.md || true
+
+        
       - name: Debug OpenAPI versions & content
         run: |
           echo "OLD VERSION:"
@@ -86,12 +93,6 @@ jobs:
           yq '.info.version' new.yaml
           echo "---"
           cat new.yaml
-
-      - name: Compare OpenAPI specs for breaking changes
-        run: |
-          git show origin/main:spec/server.yaml > old.yaml
-          cp spec/server.yaml new.yaml
-          oasdiff breaking old.yaml new.yaml -f markdown > openapi-breaking-changes.md || true
 
       - name: Validate version bump if breaking changes
         run: |
