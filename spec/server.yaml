@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   title: Todo API
-  version: "1.0.0"
+  version: "1.5.0"
   description: |
     A simple Todo API that demonstrates endpoints for managing todos.
     This spec includes custom extensions like `x-operationname` to guide client generation.
