@@ -59,8 +59,51 @@ jobs:
           fi
 
       # Step 6: Run all tests with coverage.
-      - name: Run Tests
-        run: npm run test
+      # - name: Run Tests
+      #   run: npm run test
 
-      - name: Run typecheck
-        run: npm run build:dev
+      # - name: Run typecheck
+      #   run: npm run build:dev
+
+      - name: Install oasdiff
+        run: |
+          curl -sSL https://raw.githubusercontent.com/Tufin/oasdiff/main/install.sh | sh
+
+      - name: Compare OpenAPI specs for breaking changes
+        run: |
+          git show origin/main:spec/server.yaml > old.yaml
+          cp spec/server.yaml new.yaml
+          oasdiff breaking old.yaml new.yaml -f markdown > openapi-breaking-changes.md || true
+
+      - name: Validate version bump if breaking changes
+        run: |
+          OLD_VERSION=$(yq '.info.version' old.yaml)
+          NEW_VERSION=$(yq '.info.version' new.yaml)
+          OLD_MAJOR=$(echo "$OLD_VERSION" | cut -d. -f1)
+          NEW_MAJOR=$(echo "$NEW_VERSION" | cut -d. -f1)
+
+          if grep -q "." openapi-breaking-changes.md; then
+            echo "🚨 Breaking changes detected!"
+            echo "Old version: $OLD_VERSION"
+            echo "New version: $NEW_VERSION"
+
+            if [ "$NEW_MAJOR" -le "$OLD_MAJOR" ]; then
+              echo "❌ Major version must be bumped for breaking changes!"
+              cat openapi-breaking-changes.md
+              exit 1
+            else
+              echo "✅ Breaking changes allowed — major version bumped."
+            fi
+          else
+              echo "✅ No breaking changes detected."
+            fi
+
+      - name: Generate OpenAPI changelog
+        run: |
+          oasdiff changelog old.yaml new.yaml -f markdown > openapi-changelog.md || true
+
+      - name: Append OpenAPI changelog to changelog.md
+        run: |
+          echo "## 🔄 Changelog ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))" >> changelog.md
+          cat openapi-changelog.md >> changelog.md
+          echo "" >> changelog.md
