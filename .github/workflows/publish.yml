@@ -1,3 +1,10 @@
+name: Publish to NPM & PyPI
+
+on:
+  push:
+    branches:
+      - main
+
 jobs:
   publish:
     runs-on: ubuntu-latest
