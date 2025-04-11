@@ -110,5 +110,5 @@ export type UpdateTodoResponses = {
 export type UpdateTodoResponse = UpdateTodoResponses[keyof UpdateTodoResponses];
 
 export type ClientOptions = {
-    baseURL: 'http://localhost:5000' | (string & {});
+    baseURL: 'http://127.0.0.1:5000' | (string & {});
 };
