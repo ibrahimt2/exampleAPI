@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getTodos, createTodo, getTodoById, updateTodo } from "../../client/sdk.gen";
+import { getTodos, createTodo, getTodoById, updateTodo } from "../../node_client/sdk.gen";
 
 // These tests assume your Flask server is running at http://localhost:5000.
 // If your server uses a self-signed certificate, you might need to disable TLS checking:
