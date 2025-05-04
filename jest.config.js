@@ -14,10 +14,10 @@ module.exports = {
     // Optionally, specify which files to collect coverage from:
     collectCoverageFrom: [
         "src/**/*.{ts,tsx}",
-        "client/**/*.{ts,tsx}",
+        "node-client/**/*.{ts,tsx}",
         "!src/**/*.d.ts",
-        "!client/index.ts",
-        "!client/**/*.d.ts"
+        "!node-client/index.ts",
+        "!node-client/**/*.d.ts"
     ],    
     // Specify file patterns for tests.
     testMatch: ["**/?(*.)+(spec|test).[tj]s?(x)"],
