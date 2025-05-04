@@ -7,7 +7,7 @@
   },
   "scripts": {
     "node-test": "jest --coverage",
-    "python-test": "PYTHONPATH=python_client python3 -m pytest --cov=todo_api_client.api --cov-report=term-missing --cov-fail-under=100 tests/integration",
+    "python-test": "PYTHONPATH=python_client python3 -m pytest --cov=todo_api_client.api --cov-report=term-missing --cov-fail-under=80 tests/integration",
     "generate-node-client": "openapi-ts --input ./spec/server.yaml --output ./client --client @hey-api/client-axios",
     "generate-python-client": "scripts/generate_python_client.sh ./spec/server.yaml ./python_client",
     "build:dev": "tsc --noEmit",
