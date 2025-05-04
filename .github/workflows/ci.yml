@@ -137,23 +137,8 @@ jobs:
           fi
 
       # --- Version Sync ---
-      - name: Check Node + OpenAPI version match
+      - name: Check Node Client/OpenAPI/Python client/server versions match
         run: node scripts/check_versions_match.js
-
-      - name: Check Python client version matches OpenAPI
-        run: |
-          PY_VERSION=$(yq '.tool.poetry.version' python_client/pyproject.toml)
-          OPENAPI_VERSION=$(yq '.info.version' spec/server.yaml)
-
-          echo "📦 Python client version: $PY_VERSION"
-          echo "📄 OpenAPI spec version:  $OPENAPI_VERSION"
-
-          if [ "$PY_VERSION" != "$OPENAPI_VERSION" ]; then
-            echo "❌ Version mismatch between pyproject.toml and OpenAPI spec!"
-            exit 1
-          fi
-
-          echo "✅ Python version matches OpenAPI spec"
 
       # --- OpenAPI Changelog ---
       - name: Generate OpenAPI changelog
