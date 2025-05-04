@@ -54,7 +54,7 @@ jobs:
       - name: Check if generated node client is up-to-date
         run: |
           npm run generate-node-client
-          if ! git diff --exit-code ./client; then
+          if ! git diff --exit-code ./node_client; then
             echo "Client is out of date. Please run 'npm run generate-node-client'."
             exit 1
           fi
