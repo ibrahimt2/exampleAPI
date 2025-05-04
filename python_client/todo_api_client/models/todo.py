@@ -13,10 +13,12 @@ class Todo:
     Attributes:
         id (int):  Example: 1.
         title (str):  Example: Buy groceries.
+        completed (bool):
     """
 
     id: int
     title: str
+    completed: bool
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -24,12 +26,15 @@ class Todo:
 
         title = self.title
 
+        completed = self.completed
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "id": id,
                 "title": title,
+                "completed": completed,
             }
         )
 
@@ -42,9 +47,12 @@ class Todo:
 
         title = d.pop("title")
 
+        completed = d.pop("completed")
+
         todo = cls(
             id=id,
             title=title,
+            completed=completed,
         )
 
         todo.additional_properties = d
