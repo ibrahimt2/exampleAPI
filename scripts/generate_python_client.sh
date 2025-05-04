@@ -35,13 +35,7 @@ mkdir -p "$TARGET_DIR"
 shopt -s dotglob
 rsync -a "${DEFAULT_FOLDER}/" "$TARGET_DIR/"
 
-# Flatten the inner *_client folder by merging it into target and deleting it
-if [ -n "$INNER_PKG_NAME" ]; then
-  rsync -a "${TARGET_DIR}/${INNER_PKG_NAME}/" "$TARGET_DIR/"
-  rm -rf "${TARGET_DIR:?}/${INNER_PKG_NAME}"
-fi
-
 # Clean up the original generated folder
 rm -rf "${DEFAULT_FOLDER}"
 
-echo "✅ Client flattened and overwritten into: $TARGET_DIR"
+echo "✅ Client generated into: $TARGET_DIR"

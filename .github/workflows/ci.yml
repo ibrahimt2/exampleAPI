@@ -52,17 +52,17 @@ jobs:
       - name: Install Node dependencies
         run: npm install
 
-      - name: Check if generated client is up-to-date
+      - name: Check if generated node client is up-to-date
         run: |
-          npm run generate-client
+          npm run generate-node-client
           if ! git diff --exit-code ./client; then
-            echo "Client is out of date. Please run 'npm run generate-client'."
+            echo "Client is out of date. Please run 'npm run generate-node-client'."
             exit 1x
           fi
 
       # Step 6: Run all tests with coverage.
-      - name: Run Tests
-        run: npm run test
+      - name: Run Node Tests
+        run: npm run node-test
 
       - name: Run typecheck
         run: npm run build:dev
