@@ -1,53 +1,42 @@
 from collections.abc import Mapping
-from typing import Any, TypeVar, Optional, BinaryIO, TextIO, TYPE_CHECKING
+from typing import Any, TypeVar, Union
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..types import UNSET, Unset
-from typing import Union
-
-
-
-
-
-
 T = TypeVar("T", bound="NewTodo")
-
 
 
 @_attrs_define
 class NewTodo:
-    """ 
-        Attributes:
-            title (str):  Example: Buy groceries.
-            completed (Union[Unset, bool]):
-     """
+    """
+    Attributes:
+        title (str):  Example: Buy groceries.
+        completed (Union[Unset, bool]):
+    """
 
     title: str
     completed: Union[Unset, bool] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
 
     def to_dict(self) -> dict[str, Any]:
         title = self.title
 
         completed = self.completed
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "title": title,
-        })
+        field_dict.update(
+            {
+                "title": title,
+            }
+        )
         if completed is not UNSET:
             field_dict["completed"] = completed
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
@@ -60,7 +49,6 @@ class NewTodo:
             title=title,
             completed=completed,
         )
-
 
         new_todo.additional_properties = d
         return new_todo

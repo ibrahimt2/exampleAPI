@@ -3,35 +3,25 @@ from typing import Any, Optional, Union, cast
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response, UNSET
 from ... import errors
-
+from ...client import AuthenticatedClient, Client
 from ...models.todo import Todo
-from typing import cast
-
+from ...types import Response
 
 
 def _get_kwargs(
     todo_id: int,
     *,
     body: Todo,
-
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
-
-    
-
-    
-
     _kwargs: dict[str, Any] = {
         "method": "put",
-        "url": "/todos/{todo_id}".format(todo_id=todo_id,),
+        "url": f"/todos/{todo_id}",
     }
 
     _body = body.to_dict()
-
 
     _kwargs["json"] = _body
     headers["Content-Type"] = "application/json"
@@ -40,11 +30,11 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Union[Any, Todo]]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[Union[Any, Todo]]:
     if response.status_code == 200:
         response_200 = Todo.from_dict(response.json())
-
-
 
         return response_200
     if response.status_code == 400:
@@ -59,7 +49,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[Union[Any, Todo]]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[Union[Any, Todo]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -73,9 +65,8 @@ def sync_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
     body: Todo,
-
 ) -> Response[Union[Any, Todo]]:
-    """ Update a specific todo by ID
+    """Update a specific todo by ID
 
     Args:
         todo_id (int):
@@ -87,13 +78,11 @@ def sync_detailed(
 
     Returns:
         Response[Union[Any, Todo]]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         todo_id=todo_id,
-body=body,
-
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -102,14 +91,14 @@ body=body,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     todo_id: int,
     *,
     client: Union[AuthenticatedClient, Client],
     body: Todo,
-
 ) -> Optional[Union[Any, Todo]]:
-    """ Update a specific todo by ID
+    """Update a specific todo by ID
 
     Args:
         todo_id (int):
@@ -121,24 +110,22 @@ def sync(
 
     Returns:
         Union[Any, Todo]
-     """
-
+    """
 
     return sync_detailed(
         todo_id=todo_id,
-client=client,
-body=body,
-
+        client=client,
+        body=body,
     ).parsed
+
 
 async def asyncio_detailed(
     todo_id: int,
     *,
     client: Union[AuthenticatedClient, Client],
     body: Todo,
-
 ) -> Response[Union[Any, Todo]]:
-    """ Update a specific todo by ID
+    """Update a specific todo by ID
 
     Args:
         todo_id (int):
@@ -150,29 +137,25 @@ async def asyncio_detailed(
 
     Returns:
         Response[Union[Any, Todo]]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         todo_id=todo_id,
-body=body,
-
+        body=body,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     todo_id: int,
     *,
     client: Union[AuthenticatedClient, Client],
     body: Todo,
-
 ) -> Optional[Union[Any, Todo]]:
-    """ Update a specific todo by ID
+    """Update a specific todo by ID
 
     Args:
         todo_id (int):
@@ -184,12 +167,12 @@ async def asyncio(
 
     Returns:
         Union[Any, Todo]
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        todo_id=todo_id,
-client=client,
-body=body,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            todo_id=todo_id,
+            client=client,
+            body=body,
+        )
+    ).parsed
