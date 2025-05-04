@@ -1,6 +1,7 @@
 module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node', // or 'jsdom' for browser-like testing
+    coverageProvider: "v8", // 👈 Use V8 instead of babel for better ts support
     collectCoverage: true,
     coverageDirectory: "coverage",
     coverageThreshold: {
@@ -13,12 +14,11 @@ module.exports = {
     },
     // Optionally, specify which files to collect coverage from:
     collectCoverageFrom: [
-        "src/**/*.{ts,tsx}",
-        "node-client/**/*.{ts,tsx}",
-        "!src/**/*.d.ts",
-        "!node-client/index.ts",
-        "!node-client/**/*.d.ts"
-    ],    
+      "node_client/**/*.{ts,tsx}",
+      "!node_client/**/*.d.ts",
+      "!node_client/index.ts",
+      "!node_client/types.gen.ts",
+    ],
     // Specify file patterns for tests.
     testMatch: ["**/?(*.)+(spec|test).[tj]s?(x)"],
   };
