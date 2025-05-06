@@ -1,5 +1,11 @@
 import axios from "axios";
-import { getTodos, createTodo, getTodoById, updateTodo } from "../../node_client/sdk.gen";
+import {
+  getTodos,
+  createTodo,
+  getTodoById,
+  updateTodo,
+} from "../../node_client/sdk.gen";
+import { createClient, createConfig } from "@hey-api/client-axios";
 
 // These tests assume your Flask server is running at http://localhost:5000.
 // If your server uses a self-signed certificate, you might need to disable TLS checking:
@@ -89,7 +95,11 @@ describe("Todo API Integration Tests", () => {
       throw new Error("Todo was not created");
     }
     const updatedTitle = `${testTitle} Updated`;
-    const updatedTodo = { id: createdTodoId, title: updatedTitle, completed: true };
+    const updatedTodo = {
+      id: createdTodoId,
+      title: updatedTitle,
+      completed: true,
+    };
     const response = await updateTodo({
       path: { todoId: createdTodoId },
       body: updatedTodo,
@@ -146,5 +156,23 @@ describe("Todo API Integration Tests", () => {
     } else {
       throw errorResponse;
     }
+  });
+
+ describe("Custom baseURL handling", () => {
+  it("should call the API using a custom baseURL (client override)", async () => {
+    const baseURL = "http://my-custom-server:1234";
+    const customClient = createClient(createConfig({ baseURL }));
+
+    const spy = vi.spyOn(customClient.instance, "get").mockResolvedValue({
+      status: 200,
+      data: [],
+    });
+
+    await getTodos({ client: customClient });
+
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ url: "/todos" }));
+    expect(customClient.instance.defaults.baseURL).toBe(baseURL);
+
+    spy.mockRestore();
   });
 });
