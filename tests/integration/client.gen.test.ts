@@ -157,8 +157,7 @@ describe("Todo API Integration Tests", () => {
       throw errorResponse;
     }
   });
-
- describe("Custom baseURL handling", () => {
+  
   it("should call the API using a custom baseURL (client override)", async () => {
     const baseURL = "http://my-custom-server:1234";
     const customClient = createClient(createConfig({ baseURL }));
@@ -175,4 +174,4 @@ describe("Todo API Integration Tests", () => {
 
     spy.mockRestore();
   });
-});
+})
