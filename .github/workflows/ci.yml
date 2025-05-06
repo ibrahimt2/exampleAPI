@@ -95,31 +95,57 @@ jobs:
       - name: Check Node Client/OpenAPI/Python client/server versions match
         run: node scripts/check_versions_match.js
 
-         # --- Generated Client Checks ---
-      - name: Check if generated node client is up-to-date
-        run: |
-          npm run generate-node-client
-          if ! git diff --exit-code ./node_client; then
-            echo "Client is out of date. Please run 'npm run generate-node-client'."
-            exit 1
-          fi
-
       - name: Install openapi-python-client
         run: pip3 install openapi-python-client
 
       - name: Install rsync
         run: sudo apt-get update && sudo apt-get install -y rsync
 
-      - name: Check if generated Python client is up-to-date
+        # --- Reset generated clients to match Git state ---
+      - name: Reset Node client directory to match Git state
+        run: git checkout -- node_client
+
+      - name: Reset Python client directory to match Git state
+        run: git checkout -- python_client
+
+      # --- Generate clients ---
+      - name: Generate Node client
+        run: npm run generate-node-client
+
+      - name: Generate Python client
+        run: npm run generate-python-client
+
+      # --- Check if generated Node client is up-to-date ---
+      - name: Check if Node client is up-to-date
         run: |
-          npm run generate-python-client
-          if ! git diff --exit-code ./python_client; then
-            echo "Python client is out of date. Please run 'npm run generate-python-client'."
+          echo "--- Git status for node_client ---"
+          git status node_client
+          echo "--- Git diff for node_client ---"
+          git diff node_client
+          if [[ -n "$(git ls-files --others --exclude-standard node_client)" ]]; then
+            echo "❌ Untracked files detected in node_client. Client is out of date."
+            exit 1
+          fi
+          if ! git diff --quiet node_client; then
+            echo "❌ Changes detected in node_client. Client is out of date."
             exit 1
           fi
 
-      - name: Install Node dependencies
-        run: npm install
+      # --- Check if generated Python client is up-to-date ---
+      - name: Check if Python client is up-to-date
+        run: |
+          echo "--- Git status for python_client ---"
+          git status python_client
+          echo "--- Git diff for python_client ---"
+          git diff python_client
+          if [[ -n "$(git ls-files --others --exclude-standard python_client)" ]]; then
+            echo "❌ Untracked files detected in python_client. Client is out of date."
+            exit 1
+          fi
+          if ! git diff --quiet python_client; then
+            echo "❌ Changes detected in python_client. Client is out of date."
+            exit 1
+          fi
 
       # --- Tests ---
 
