@@ -30,7 +30,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/GetTodosResponse"
+              "$ref": "#/definitions/GetTodosPayload"
             }
           },
           "default": {
@@ -154,7 +154,7 @@
     }
   },
   "definitions": {
-    "GetTodosResponse": {
+    "GetTodosPayload": {
       "type": "object",
       "properties": {
         "todos": {
@@ -166,7 +166,7 @@
           "description": "List of all todos"
         }
       },
-      "title": "GetTodosResponse"
+      "title": "GetTodosPayload"
     },
     "NewTodo": {
       "type": "object",

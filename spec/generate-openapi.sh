@@ -14,4 +14,4 @@ protoc \
 echo "Converting to OpenAPI v3..."
 npx swagger2openapi server.swagger.json -o server.yaml
 
-echo "✅ Done. Output: openapi-v3.yaml"
+echo "✅ Done."

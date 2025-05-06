@@ -73,10 +73,10 @@ message NewTodo {
   ];
 }
 
-message GetTodosResponse {
+message GetTodosPayload {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
-      title: "GetTodosResponse"
+      title: "GetTodosPayload"
     }
   };
 
@@ -92,7 +92,6 @@ message GetTodoByIdRequest {
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
       description: "ID of the todo to fetch"
       example: "1"
-      required: "true"
     }
   ];
 }
@@ -102,7 +101,6 @@ message UpdateTodoRequest {
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
       description: "ID of the todo to update"
       example: "1"
-      required: "true"
     }
   ];
 
@@ -114,7 +112,7 @@ message UpdateTodoRequest {
 }
 
 service TodoService {
-  rpc GetTodos(google.protobuf.Empty) returns (GetTodosResponse) {
+  rpc GetTodos(google.protobuf.Empty) returns (GetTodosPayload) {
     option (google.api.http) = {
       get: "/todos"
     };
