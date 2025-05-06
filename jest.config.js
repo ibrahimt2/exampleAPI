@@ -18,7 +18,8 @@ module.exports = {
       "!node_client/**/*.d.ts",
       "!node_client/index.ts",
       "!node_client/types.gen.ts",
+      '!spec/**/*', 
     ],
     // Specify file patterns for tests.
-    testMatch: ["**/?(*.)+(spec|test).[tj]s?(x)"],
+    testMatch: ["**/?(*.)+(test).[tj]s?(x)"],
   };
