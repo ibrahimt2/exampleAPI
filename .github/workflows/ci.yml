@@ -16,6 +16,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      # --- Node.js Setup ---
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install Node dependencies
+        run: npm install
+
       # --- Python Setup & Flask ---
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -27,63 +36,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install flask requests pytest pytest-cov pyyaml
 
-      - name: Start Flask Server
-        working-directory: ./server
-        run: |
-          nohup python server.py > ../server.log 2>&1 &
-          for i in {1..10}; do
-            if curl -s http://localhost:5000/todos > /dev/null; then
-              echo "Flask server is up!"
-              break
-            else
-              echo "Waiting for Flask server to start..."
-              sleep 3
-            fi
-          done
 
-      # --- Node.js Setup ---
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18'
 
-      - name: Install Node dependencies
-        run: npm install
-
-      # --- Generated Client Checks ---
-      - name: Check if generated node client is up-to-date
-        run: |
-          npm run generate-node-client
-          if ! git diff --exit-code ./node_client; then
-            echo "Client is out of date. Please run 'npm run generate-node-client'."
-            exit 1
-          fi
-
-      - name: Install openapi-python-client
-        run: pip3 install openapi-python-client
-
-      - name: Install rsync
-        run: sudo apt-get update && sudo apt-get install -y rsync
-
-      - name: Check if generated Python client is up-to-date
-        run: |
-          npm run generate-python-client
-          if ! git diff --exit-code ./python_client; then
-            echo "Python client is out of date. Please run 'npm run generate-python-client'."
-            exit 1
-          fi
-
-      # --- Tests ---
-      - name: Run Node tests
-        run: npm run node-test
-
-      - name: Run typecheck
-        run: npm run build:dev
-
-      - name: Run Python tests with coverage
-        run: npm run python-test
-
-      # --- OpenAPI Breaking Check ---
+       # --- OpenAPI Breaking Check ---
       - name: Install oasdiff
         run: |
           curl -sSL https://raw.githubusercontent.com/Tufin/oasdiff/main/install.sh | sh
@@ -139,6 +94,57 @@ jobs:
       # --- Version Sync ---
       - name: Check Node Client/OpenAPI/Python client/server versions match
         run: node scripts/check_versions_match.js
+
+         # --- Generated Client Checks ---
+      - name: Check if generated node client is up-to-date
+        run: |
+          npm run generate-node-client
+          if ! git diff --exit-code ./node_client; then
+            echo "Client is out of date. Please run 'npm run generate-node-client'."
+            exit 1
+          fi
+
+      - name: Install openapi-python-client
+        run: pip3 install openapi-python-client
+
+      - name: Install rsync
+        run: sudo apt-get update && sudo apt-get install -y rsync
+
+      - name: Check if generated Python client is up-to-date
+        run: |
+          npm run generate-python-client
+          if ! git diff --exit-code ./python_client; then
+            echo "Python client is out of date. Please run 'npm run generate-python-client'."
+            exit 1
+          fi
+
+      - name: Install Node dependencies
+        run: npm install
+
+      # --- Tests ---
+
+      - name: Start Flask Server
+        working-directory: ./server
+        run: |
+          nohup python server.py > ../server.log 2>&1 &
+          for i in {1..10}; do
+            if curl -s http://localhost:5000/todos > /dev/null; then
+              echo "Flask server is up!"
+              break
+            else
+              echo "Waiting for Flask server to start..."
+              sleep 3
+            fi
+          done
+
+      - name: Run Node tests
+        run: npm run node-test
+
+      - name: Run typecheck
+        run: npm run build:dev
+
+      - name: Run Python tests with coverage
+        run: npm run python-test
 
       # --- OpenAPI Changelog ---
       - name: Generate OpenAPI changelog
