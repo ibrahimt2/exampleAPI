@@ -22,7 +22,6 @@
   "description": "",
   "dependencies": {
     "@hey-api/client-axios": "^0.7.0",
-    "openapi-ts": "^0.3.4",
     "swagger-typescript-api": "^13.0.28"
   },
   "devDependencies": {
