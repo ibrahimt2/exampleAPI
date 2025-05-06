@@ -16,13 +16,16 @@ const fail = (msg: string): never => {
   throw new Error(msg);
 };
 
+const baseURL = "http://127.0.0.1:5000";
+const defaultClient = createClient(createConfig({ baseURL }));
+
 describe("Todo API Integration Tests", () => {
   let createdTodoId: number | undefined;
   const testTitle = `Integration Test Todo ${Date.now()}`;
 
   // GET /todos: List todos.
   it("should list todos (GET /todos)", async () => {
-    const response = await getTodos();
+    const response = await getTodos({ client: defaultClient });
     expect(response.status).toBe(200);
     expect(Array.isArray(response.data)).toBe(true);
   });
@@ -30,7 +33,7 @@ describe("Todo API Integration Tests", () => {
   // POST /todos: Create a new todo.
   it("should create a new todo (POST /todos) and default 'completed' to false", async () => {
     const newTodo = { title: testTitle };
-    const response = await createTodo({ body: newTodo });
+    const response = await createTodo({ body: newTodo, client: defaultClient});
     expect(response.status).toBe(201);
     const todo = response.data;
     expect(todo).toBeDefined();
@@ -46,7 +49,7 @@ describe("Todo API Integration Tests", () => {
     if (createdTodoId === undefined) {
       throw new Error("Todo was not created");
     }
-    const response = await getTodoById({ path: { todoId: createdTodoId } });
+    const response = await getTodoById({ path: { todoId: createdTodoId }, client: defaultClient });
     expect(response.status).toBe(200);
     const todo = response.data;
     expect(todo).toBeDefined();
@@ -59,7 +62,7 @@ describe("Todo API Integration Tests", () => {
     let errorResponse;
     try {
       // Pass throwOnError: true to force the client to throw on non-2xx response.
-      await getTodoById({ path: { todoId: -1 }, throwOnError: true });
+      await getTodoById({ path: { todoId: -1 }, throwOnError: true, client: defaultClient });
       fail("Expected to receive a 404 error for a non-existent todo");
     } catch (error: any) {
       errorResponse = error;
@@ -76,7 +79,7 @@ describe("Todo API Integration Tests", () => {
   it("should return 400 when creating a new todo without a title (POST /todos)", async () => {
     let errorResponse;
     try {
-      await createTodo({ body: {} as any, throwOnError: true });
+      await createTodo({ body: {} as any, throwOnError: true, client: defaultClient });
       fail("Expected a 400 error due to missing 'title'");
     } catch (error: any) {
       errorResponse = error;
@@ -103,6 +106,7 @@ describe("Todo API Integration Tests", () => {
     const response = await updateTodo({
       path: { todoId: createdTodoId },
       body: updatedTodo,
+      client: defaultClient
     });
     expect(response.status).toBe(200);
     const todo = response.data;
@@ -124,6 +128,7 @@ describe("Todo API Integration Tests", () => {
         // Body is missing 'completed'
         body: { id: createdTodoId, title: "Incomplete Update" } as any,
         throwOnError: true,
+        client: defaultClient
       });
       fail("Expected a 400 error for missing required fields");
     } catch (error: any) {
@@ -145,6 +150,7 @@ describe("Todo API Integration Tests", () => {
         path: { todoId: -1 },
         body: { id: -1, title: "Non-existent", completed: false },
         throwOnError: true,
+        client: defaultClient
       });
       fail("Expected a 404 error for a non-existent todo");
     } catch (error: any) {

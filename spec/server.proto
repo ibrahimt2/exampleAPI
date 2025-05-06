@@ -1,0 +1,160 @@
+syntax = "proto3";
+
+option go_package = "github.com/example/todo;todo";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Todo API";
+    version: "1.0.0";
+    description: "A simple Todo API that demonstrates endpoints for managing todos.\nThis spec includes accurate summaries and descriptions for client generation.";
+  };
+  schemes: HTTP;
+  consumes: "application/json";
+  produces: "application/json";
+  base_path: "/";
+};
+
+message Todo {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Todo"
+    }
+  };
+
+  int32 id = 1 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "Unique identifier for the todo"
+      example: "1"
+      required: "true"
+    }
+  ];
+
+  string title = 2 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "Title of the todo"
+      example: "\"Buy groceries\""
+      required: "true"
+    }
+  ];
+
+  bool completed = 3 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "Whether the todo is marked as completed"
+      example: "false"
+      required: "true"
+    }
+  ];
+}
+
+message NewTodo {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "NewTodo"
+    }
+  };
+
+  string title = 1 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "Title of the new todo"
+      example: "\"Buy groceries\""
+      required: "true"
+    }
+  ];
+
+  bool completed = 2 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "Initial completion state of the new todo"
+      example: "false"
+    }
+  ];
+}
+
+message GetTodosPayload {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "GetTodosPayload"
+    }
+  };
+
+  repeated Todo todos = 1 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "List of all todos"
+    }
+  ];
+}
+
+message GetTodoByIdRequest {
+  int32 todoId = 1 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "ID of the todo to fetch"
+      example: "1"
+    }
+  ];
+}
+
+message UpdateTodoRequest {
+  int32 todoId = 1 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "ID of the todo to update"
+      example: "1"
+    }
+  ];
+
+  Todo todo = 2 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      description: "The updated todo data"
+    }
+  ];
+}
+
+service TodoService {
+  rpc GetTodos(google.protobuf.Empty) returns (GetTodosPayload) {
+    option (google.api.http) = {
+      get: "/todos"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Retrieve a list of todos"
+      description: "Returns all todos currently stored in the system."
+      operation_id: "getTodos"
+    };
+  }
+
+  rpc CreateTodo(NewTodo) returns (Todo) {
+    option (google.api.http) = {
+      post: "/todos"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Create a new todo"
+      description: "Creates and returns a new todo item."
+      operation_id: "createTodo"
+    };
+  }
+
+  rpc GetTodoById(GetTodoByIdRequest) returns (Todo) {
+    option (google.api.http) = {
+      get: "/todos/{todoId}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Retrieve a specific todo by ID"
+      description: "Fetches a todo with the specified ID. Returns 404 if not found."
+      operation_id: "getTodoById"
+    };
+  }
+
+  rpc UpdateTodo(UpdateTodoRequest) returns (Todo) {
+    option (google.api.http) = {
+      put: "/todos/{todoId}"
+      body: "todo"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Update a specific todo by ID"
+      description: "Modifies an existing todo entry. Returns 404 if the ID is not found."
+      operation_id: "updateTodo"
+    };
+  }
+}
