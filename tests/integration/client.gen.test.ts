@@ -162,7 +162,7 @@ describe("Todo API Integration Tests", () => {
     const baseURL = "http://my-custom-server:1234";
     const customClient = createClient(createConfig({ baseURL }));
 
-    const spy = vi.spyOn(customClient.instance, "get").mockResolvedValue({
+    const spy = jest.spyOn(customClient.instance, "get").mockResolvedValue({
       status: 200,
       data: [],
     });
