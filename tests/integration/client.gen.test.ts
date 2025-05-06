@@ -162,16 +162,12 @@ describe("Todo API Integration Tests", () => {
     const baseURL = "http://my-custom-server:1234";
     const customClient = createClient(createConfig({ baseURL }));
 
-    const spy = jest.spyOn(customClient.instance, "get").mockResolvedValue({
-      status: 200,
-      data: [],
-    });
+    const mockGet = jest.fn().mockResolvedValue({ status: 200, data: [] });
+    customClient.get = mockGet;
 
     await getTodos({ client: customClient });
 
-    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ url: "/todos" }));
+    expect(mockGet).toHaveBeenCalledWith(expect.objectContaining({ url: "/todos" }));
     expect(customClient.instance.defaults.baseURL).toBe(baseURL);
-
-    spy.mockRestore();
   });
 })
