@@ -10,6 +10,9 @@
     "python-test": "PYTHONPATH=python_client python3 -m pytest --cov=todo_api_client.api --cov-report=term-missing --cov-fail-under=80 tests/integration",
     "generate-node-client": "openapi-ts --input ./spec/server.yaml --output ./node_client --client @hey-api/client-axios",
     "generate-python-client": "scripts/generate_python_client.sh ./spec/server.yaml ./python_client",
+    "generate-mqtt-node-client": "asyncapi generate fromTemplate ./spec/asyncapi.yaml @asyncapi/nodejs-template -o ts-mqtt-client --param server=production",
+    "generate-mqtt-python-client": "npx @asyncapi/cli generate fromTemplate ./spec/asyncapi.yaml @asyncapi/python-paho-template -o python-mqtt-client",
+    "generate-rest-docs": "npx @redocly/cli build-docs ./spec/server.yaml -o redoc-static.html",
     "build:dev": "tsc --noEmit",
     "build": "tsc",
     "sync-version": "node scripts/set_npm_version.js",
@@ -22,6 +25,11 @@
   "description": "",
   "dependencies": {
     "@hey-api/client-axios": "^0.7.0",
+    "asyncapi-validator": "^5.1.1",
+    "hermesjs": "^2.2.1",
+    "hermesjs-mqtt": "^2.2.0",
+    "mqtt": "^5.12.1",
+    "node-yaml-config": "^1.0.0",
     "swagger-typescript-api": "^13.0.28"
   },
   "devDependencies": {

@@ -1,0 +1,25 @@
+default:
+  app:
+    name: Example MQTT API
+    version: 1.0.0
+
+  broker:
+
+
+    mqtt:
+      url: mqtt://mqtt.example.com:1883
+      topics: ["sensor/data"]
+      qos:
+      protocol: mqtt
+      retain:
+      subscribe: true
+
+
+development:
+
+test:
+
+staging:
+
+production:
+
