@@ -83,6 +83,15 @@ paths:
           description: Invalid input supplied
         '404':
           description: Todo not found
+    delete:
+      summary: Delete a specific todo by ID
+      operationId: deleteTodo
+      x-operationname: removeTodo
+      responses:
+        '204':
+          description: Todo deleted successfully (no content)
+        '404':
+          description: Todo not found
 components:
   schemas:
     Todo:
