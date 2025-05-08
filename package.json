@@ -25,6 +25,7 @@
   "description": "",
   "dependencies": {
     "@hey-api/client-axios": "^0.7.0",
+    "asyncapi-validator": "^5.1.1",
     "hermesjs": "^2.2.1",
     "hermesjs-mqtt": "^2.2.0",
     "mqtt": "^5.12.1",
