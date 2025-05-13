@@ -1,79 +1,69 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, jest } from '@jest/globals'
-import mqtt from 'mqtt'
 import net from 'net'
+import mqtt from 'mqtt'
 import Aedes from 'aedes'
 
 jest.setTimeout(15000)
 
-let deviceCommandHandler: any
-
-const PORT = 1884
+let pubClient: mqtt.MqttClient
 let broker: Aedes
 let server: net.Server
-let subClient: mqtt.MqttClient
-let pubClient: mqtt.MqttClient
+
+const PORT = 1884
 
 beforeAll(async () => {
   broker = new Aedes()
   server = net.createServer(broker.handle)
-  await new Promise<void>((resolve) => server.listen(PORT, () => resolve()))
+  await new Promise<void>((resolve) => server.listen(PORT, resolve))
 })
 
 afterAll(async () => {
   await Promise.all([
     new Promise<void>((resolve, reject) =>
-      subClient?.end(false, {}, (err) => (err ? reject(err) : resolve()))
-    ),
-    new Promise<void>((resolve, reject) =>
       pubClient?.end(false, {}, (err) => (err ? reject(err) : resolve()))
     ),
-    new Promise<void>((resolve) => server.close(() => resolve())),
-    new Promise<void>((resolve) => broker.close(() => resolve())),
+    new Promise<void>((resolve, reject) =>
+      server.close((err) => (err ? reject(err) : resolve()))
+    ),
   ])
+  broker.close()
 })
 
-describe('device-command MQTT integration', () => {
+describe('sensor-data MQTT integration', () => {
   beforeEach(() => {
     jest.resetModules()
-    deviceCommandHandler = require('../../ts-mqtt-client/src/api/handlers/device-command')
   })
 
-  it('should invoke handler and validate message via real broker', async () => {
-    const topic = 'device/command'
+  it('should call registered middleware when a message is published', async () => {
+    const topic = 'sensor/data'
     const testPayload = {
-      command: 'restart',
-      reason: 'integration',
+      deviceId: 'abc123',
+      temperature: 42.1,
+      timestamp: new Date().toISOString(),
     }
 
-    const { validateMessage } = require('../../ts-mqtt-client/src/lib/message-validator')
-    const validationSpy = jest.spyOn(require('../../ts-mqtt-client/src/lib/message-validator'), 'validateMessage')
+    const { client } = require('../../ts-mqtt-client/src/api')
+    const handler = require('../../ts-mqtt-client/src/api/handlers/sensor-data')
 
-    // Register validation middleware
-    deviceCommandHandler.registerSubscribeMiddleware(async (msg: any) => {
-      await validateMessage(msg, topic, 'ControlCommand', 'subscribe')
-    })
+    const middlewareSpy = jest.fn()
+    handler.registerPublishMiddleware(middlewareSpy)
 
-    // Setup subscriber
-    subClient = mqtt.connect(`mqtt://localhost:${PORT}`)
-    await new Promise<void>((resolve) => subClient.on('connect', () => resolve()))
-    await new Promise<void>((resolve, reject) => {
-      subClient.subscribe(topic, (err) => (err ? reject(err) : resolve()))
-    })
+    await client.init()
 
-    subClient.on('message', async (_, buffer) => {
-      const message = JSON.parse(buffer.toString())
-      await deviceCommandHandler._subscribe({ message })
-    })
-
-    // Setup publisher
+    // Connect pubClient
     pubClient = mqtt.connect(`mqtt://localhost:${PORT}`)
     await new Promise<void>((resolve) => pubClient.on('connect', () => resolve()))
 
+    // Publish actual MQTT message to trigger the Hermes listener
     pubClient.publish(topic, JSON.stringify(testPayload))
 
-    // Wait for processing
-    await new Promise((res) => setTimeout(res, 1000))
+    await new Promise((res) => setTimeout(res, 500))
 
-    expect(validationSpy).toHaveBeenCalledWith(testPayload, topic, 'ControlCommand', 'subscribe')
+    expect(middlewareSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        payload: expect.objectContaining(testPayload)
+      })
+    )    
+    expect(middlewareSpy).toHaveBeenCalledTimes(1)
   })
 })

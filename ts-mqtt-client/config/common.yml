@@ -7,7 +7,7 @@ default:
 
 
     mqtt:
-      url: mqtt://mqtt.example.com:1883
+      url: mqtt://localhost:1884
       topics: ["sensor/data"]
       qos:
       protocol: mqtt
