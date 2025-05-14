@@ -22,11 +22,10 @@ afterAll(async () => {
     new Promise<void>((resolve, reject) =>
       pubClient?.end(false, {}, (err) => (err ? reject(err) : resolve()))
     ),
-    new Promise<void>((resolve, reject) =>
-      server.close((err) => (err ? reject(err) : resolve()))
-    ),
+    new Promise<void>((resolve) => server.close(() => resolve())),
+    new Promise<void>((resolve) => broker.close(() => resolve())),
   ])
-  broker.close()
+
 })
 
 describe('sensor-data MQTT integration', () => {
@@ -65,5 +64,6 @@ describe('sensor-data MQTT integration', () => {
       })
     )    
     expect(middlewareSpy).toHaveBeenCalledTimes(1)
+    await client.app.adapters[0].instance.client.end(true)
   })
 })
