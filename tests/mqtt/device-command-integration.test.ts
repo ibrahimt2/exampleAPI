@@ -107,4 +107,38 @@ describe('sensor-data MQTT integration', () => {
     expect(middlewareSpy).not.toHaveBeenCalled()
     await shutdownClient(client)
   })
+  it('should call all registered middleware functions when a message is published', async () => {
+    const client = await initClient()
+    const handler = require('../../ts-mqtt-client/src/api/handlers/sensor-data')
+
+    const topic = 'sensor/data'
+    const testPayload = {
+      deviceId: 'abc123',
+      temperature: 42.1,
+      timestamp: new Date().toISOString(),
+    }
+
+    const middlewareSpy1 = jest.fn()
+    const middlewareSpy2 = jest.fn()
+    const middlewareSpy3 = jest.fn()
+
+    handler.registerPublishMiddleware(middlewareSpy1)
+    handler.registerPublishMiddleware(middlewareSpy2)
+    handler.registerPublishMiddleware(middlewareSpy3)
+
+    pubClient = mqtt.connect(`mqtt://localhost:${PORT}`, { reconnectPeriod: 0 })
+    await new Promise((res) => pubClient.on('connect', res))
+    pubClient.publish(topic, JSON.stringify(testPayload))
+
+    await new Promise((res) => setTimeout(res, 500))
+
+    for (const spy of [middlewareSpy1, middlewareSpy2, middlewareSpy3]) {
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({ payload: expect.objectContaining(testPayload) })
+      )
+      expect(spy).toHaveBeenCalledTimes(1)
+    }
+
+    await shutdownClient(client)
+  })
 })
