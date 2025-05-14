@@ -13,7 +13,7 @@
     "generate-mqtt-node-client": "asyncapi generate fromTemplate ./spec/asyncapi.yaml @asyncapi/nodejs-template -o ts-mqtt-client --param server=production",
     "generate-mqtt-python-client": "npx @asyncapi/cli generate fromTemplate ./spec/asyncapi.yaml @asyncapi/python-paho-template -o python-mqtt-client",
     "generate-rest-docs": "npx @redocly/cli build-docs ./spec/server.yaml -o redoc-static.html",
-    "generate-mqtt-docs": "ag ./spec/asyncapi.yaml @asyncapi/html-template -o mqtt-docs",
+    "generate-mqtt-docs": "ag ./spec/asyncapi.yaml @asyncapi/html-template -o ./spec/mqtt-docs",
     "build:dev": "tsc --noEmit",
     "build": "tsc",
     "sync-version": "node scripts/set_npm_version.js",
