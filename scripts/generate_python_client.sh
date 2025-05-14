@@ -13,7 +13,7 @@ if [ -z "$INPUT_PATH" ] || [ -z "$TARGET_DIR" ]; then
 fi
 
 # Generate the client
-python3 -m openapi_python_client generate --path "$INPUT_PATH"
+python3 -m openapi_python_client generate --path "$INPUT_PATH" --meta poetry
 
 # Extract the title from the spec (use yq if available, fallback to grep)
 if command -v yq &> /dev/null; then
