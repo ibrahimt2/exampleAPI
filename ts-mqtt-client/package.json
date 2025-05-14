@@ -1,0 +1,16 @@
+{
+  "name": "example-mqtt-api",
+  "version": "1.0.0",
+  "description": "Basic AsyncAPI spec for MQTT pub/sub",
+  "main": "./src/api",
+  "dependencies": {
+    "chalk": "4.1.2",
+    "dotenv": "8.1.0",
+    "hermesjs": "2.x",
+    "hermesjs-router": "1.x",
+    "node-fetch": "2.6.0",
+    "node-yaml-config": "0.0.4",
+    "asyncapi-validator": "3.0.0",
+    "hermesjs-mqtt": "2.x"
+  }
+}
