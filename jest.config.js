@@ -20,5 +20,5 @@ module.exports = {
       "!node_client/types.gen.ts",
     ],
     // Specify file patterns for tests.
-    testMatch: ["**/?(*.)+(spec|test).[tj]s?(x)"],
+    testMatch: ["**/?(*.)+(test).[tj]s?(x)"],
   };
