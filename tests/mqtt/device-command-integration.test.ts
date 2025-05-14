@@ -25,8 +25,17 @@ afterAll(async () => {
     new Promise<void>((resolve) => server.close(() => resolve())),
     new Promise<void>((resolve) => broker.close(() => resolve())),
   ])
-
 })
+
+const initClient = async () => {
+  const { client } = require('../../ts-mqtt-client/src/api')
+  await client.init()
+  return client
+}
+
+const shutdownClient = async (client: any) => {
+  await client.app.adapters[0].instance.client.end(true)
+}
 
 describe('sensor-data MQTT integration', () => {
   beforeEach(() => {
@@ -34,8 +43,7 @@ describe('sensor-data MQTT integration', () => {
   })
 
   it('should call registered middleware when a message is published', async () => {
-    const { client } = require('../../ts-mqtt-client/src/api')
-    await client.init()
+    const client = await initClient()
     const handler = require('../../ts-mqtt-client/src/api/handlers/sensor-data')
 
     const topic = 'sensor/data'
@@ -48,51 +56,41 @@ describe('sensor-data MQTT integration', () => {
     const middlewareSpy = jest.fn()
     handler.registerPublishMiddleware(middlewareSpy)
 
-    pubClient = mqtt.connect(`mqtt://localhost:${PORT}`)
+    pubClient = mqtt.connect(`mqtt://localhost:${PORT}`, { reconnectPeriod: 0 })
     await new Promise((res) => pubClient.on('connect', res))
-
     pubClient.publish(topic, JSON.stringify(testPayload))
 
     await new Promise((res) => setTimeout(res, 500))
 
     expect(middlewareSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        payload: expect.objectContaining(testPayload)
-      })
-    )    
+      expect.objectContaining({ payload: expect.objectContaining(testPayload) })
+    )
     expect(middlewareSpy).toHaveBeenCalledTimes(1)
-    await client.app.adapters[0].instance.client.end(true)
-
+    await shutdownClient(client)
   })
 
   it('should not call middleware for an invalid message', async () => {
-    const { client } = require('../../ts-mqtt-client/src/api')
-    await client.init()
+    const client = await initClient()
     const handler = require('../../ts-mqtt-client/src/api/handlers/sensor-data')
 
     const topic = 'sensor/data'
-    const invalidPayload = {
-      // missing temperature and timestamp
-      deviceId: 'abc123',
-    }
+    const invalidPayload = { deviceId: 'abc123' } // missing fields
 
     const middlewareSpy = jest.fn()
     handler.registerPublishMiddleware(middlewareSpy)
 
-    pubClient = mqtt.connect(`mqtt://localhost:${PORT}`)
+    pubClient = mqtt.connect(`mqtt://localhost:${PORT}`, { reconnectPeriod: 0 })
     await new Promise((res) => pubClient.on('connect', res))
-
     pubClient.publish(topic, JSON.stringify(invalidPayload))
 
     await new Promise((res) => setTimeout(res, 500))
 
     expect(middlewareSpy).not.toHaveBeenCalled()
-    await client.app.adapters[0].instance.client.end(true)
+    await shutdownClient(client)
   })
 
   it('should handle malformed JSON payloads without crashing', async () => {
-    const { client } = require('../../ts-mqtt-client/src/api')
-    await client.init()
+    const client = await initClient()
     const handler = require('../../ts-mqtt-client/src/api/handlers/sensor-data')
 
     const topic = 'sensor/data'
@@ -100,14 +98,13 @@ describe('sensor-data MQTT integration', () => {
     const middlewareSpy = jest.fn()
     handler.registerPublishMiddleware(middlewareSpy)
 
-    pubClient = mqtt.connect(`mqtt://localhost:${PORT}`)
+    pubClient = mqtt.connect(`mqtt://localhost:${PORT}`, { reconnectPeriod: 0 })
     await new Promise((res) => pubClient.on('connect', res))
-
     pubClient.publish(topic, '{"deviceId": "abc123",') // malformed JSON
 
     await new Promise((res) => setTimeout(res, 500))
 
     expect(middlewareSpy).not.toHaveBeenCalled()
-    await client.app.adapters[0].instance.client.end(true)
+    await shutdownClient(client)
   })
 })
