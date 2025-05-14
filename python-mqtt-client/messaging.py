@@ -10,7 +10,7 @@ class Messaging:
     def __init__(self, config, subscription = None, on_message = None, clientId = None):
         global on_connect
         self.config = config
-        defaultHost = 'mqtt.example.com:1883'
+        defaultHost = 'localhost:1884'
 
         if (clientId):
             self.client = mqtt.Client(clientId)
