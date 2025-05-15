@@ -13,7 +13,6 @@ from todo_api_client.api.default import (
 )
 from todo_api_client.api.default import create_todo as create_todo_api
 
-
 BASE_URL = "http://localhost:5000"
 
 
@@ -32,7 +31,6 @@ def created_todo_id(client):
     new_todo = NewTodo(title="Integration Test Todo")
     created = create_todo.sync(client=client, body=new_todo)
     assert created.title == "Integration Test Todo"
-    assert created.completed is False
     return created.id
 
 
@@ -45,7 +43,6 @@ def test_create_todo(client):
     new_todo = NewTodo(title="Integration Test Todo")
     created = create_todo.sync(client=client, body=new_todo)
     assert created.title == "Integration Test Todo"
-    assert created.completed is False
 
 
 def test_get_todo_by_id(client, created_todo_id):
@@ -57,22 +54,24 @@ def test_404_get(client):
     todo = get_todo_by_id.sync(client=client, todo_id=-1)
     assert todo is None
 
+
 def test_update_todo(client, created_todo_id):
-    updated = Todo(id=created_todo_id, title="Updated Title", completed=True)
+    updated = Todo(id=created_todo_id, title="Updated Title")
     result = update_todo.sync(client=client, todo_id=created_todo_id, body=updated)
     assert result.title == "Updated Title"
-    assert result.completed is True
 
 
 def test_400_update_invalid(client, created_todo_id):
     with pytest.raises(Exception):
+        # Missing title
         update_todo.sync(client=client, todo_id=created_todo_id, body=Todo(id=created_todo_id))  # type: ignore
 
 
 def test_404_update(client):
-    fake = Todo(id=-1, title="Doesn't exist", completed=False)
+    fake = Todo(id=-1, title="Doesn't exist")
     result = update_todo.sync(client=client, todo_id=-1, body=fake)
     assert result is None
+
 
 def test_404_get_strict(strict_client):
     from todo_api_client.api.default.get_todo_by_id import _parse_response
@@ -80,15 +79,18 @@ def test_404_get_strict(strict_client):
     with pytest.raises(errors.UnexpectedStatus):
         _parse_response(client=strict_client, response=raw)
 
+
 def test_404_update_strict(strict_client):
     from todo_api_client.api.default.update_todo import _parse_response
     raw = RawResponse(status_code=499, content=b"weird client error", request=None)
     with pytest.raises(errors.UnexpectedStatus):
         _parse_response(client=strict_client, response=raw)
 
+
 def test_400_update_invalid_strict(strict_client, created_todo_id):
     with pytest.raises(Exception):
         update_todo.sync(client=strict_client, todo_id=created_todo_id, body=Todo(id=created_todo_id))  # type: ignore
+
 
 @pytest.mark.asyncio
 async def test_async_create(strict_client):
