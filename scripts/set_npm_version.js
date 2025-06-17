@@ -1,13 +1,14 @@
-const fs    = require("fs");
-const path  = require("path");
+const fs = require("fs");
+const path = require("path");
 const child = require("child_process");
-const toml  = require("toml");
-const tomlify = require("tomlify-j0.4"); 
+const toml = require("toml");
+const tomlify = require("tomlify-j0.4");
 
 // 1) Read version from OpenAPI
 const version = child
   .execSync("yq -r '.info.version' spec/server.yaml")
-  .toString().trim();
+  .toString()
+  .trim();
 console.log("🔖 Version to sync:", version);
 
 // 2) Update package.json
@@ -25,11 +26,6 @@ pyObj.project.version = version;
 fs.writeFileSync(pyPath, tomlify.toToml(pyObj, { space: 2 }));
 console.log("✅ Synced pyproject.toml");
 
-// 4) Update AsyncAPI spec version
-let asyncdoc = fs.readFileSync("spec/asyncapi.yaml", "utf8");
-asyncdoc = asyncdoc.replace(
-  /version:\s*".*"/,
-  `version: "${version}"`
-);
-fs.writeFileSync("spec/asyncapi.yaml", asyncdoc);
+// 4) Update AsyncAPI spec version via yq
+child.execSync(`yq -i '.info.version = "${version}"' spec/asyncapi.yaml`);
 console.log("✅ Synced spec/asyncapi.yaml");
