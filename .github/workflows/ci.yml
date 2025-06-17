@@ -222,8 +222,8 @@ jobs:
             # ─── Configure Git identity ───────────────────────────────────────
       - name: Set Git user for version bump
         run: |
-          git config user.name  "GitHub Actions"
-          git config user.email "actions@github.com"
+          git config user.name  "ibrahimt2"
+          git config user.email "zerobottles@outlook.com"
 
       # ─── npm publish ────────────────────────────────────────────────
       - name: Set up Node.js

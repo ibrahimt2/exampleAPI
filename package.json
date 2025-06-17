@@ -1,6 +1,6 @@
 {
   "name": "@ibrahimt2miraj/exampleserverrepository",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "index.js",
   "files": [
     "node_client/**/*",
@@ -24,10 +24,9 @@
     "generate-rest-docs": "npx @redocly/cli build-docs ./spec/server.yaml -o redoc-static.html",
     "generate-mqtt-docs": "ag ./spec/asyncapi.yaml @asyncapi/html-template -o ./spec/mqtt-docs --force-write",
     "build:dev": "tsc --noEmit",
-    "build": "tsc",
+    "build": "tsc -b .",
     "sync-version": "node scripts/set_npm_version.js",
-    "check-version": "node scripts/check_versions_match.js",
-    "prepublishOnly": "npm run sync-version && npm run build"
+    "check-version": "node scripts/check_versions_match.js"
   },
   "publishConfig": {
     "access": "public"
