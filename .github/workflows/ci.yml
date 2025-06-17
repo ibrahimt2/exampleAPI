@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: CI
 
     steps:
       - name: Checkout repository
@@ -230,6 +231,7 @@ jobs:
   publish:
     name: Publish Packages
     runs-on: ubuntu-latest
+    environment: CI
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
