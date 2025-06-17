@@ -237,7 +237,6 @@ jobs:
 
       - name: Publish npm package
         run: |
-          npm version patch
           npm publish
 
       - name: Cleanup npm auth

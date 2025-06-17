@@ -1,6 +1,6 @@
 {
   "name": "example-mqtt-api",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Basic AsyncAPI spec for MQTT pub/sub",
   "main": "./src/api",
   "dependencies": {
