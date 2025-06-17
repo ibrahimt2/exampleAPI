@@ -30,26 +30,33 @@ jobs:
       - name: Install Node dependencies
         run: npm install
 
-      - name: Sanity-check NPM_TOKEN
+            # ─── Verify NPM publish rights ────────────────────────────────────
+      - name: Verify NPM auth & publish rights
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # clear any old rc
-          rm -f ~/.npmrc
+          # Point npm at the official registry
+          npm config set registry https://registry.npmjs.org/
 
-          # write a clean one
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-          echo "@ibrahimt2miraj:registry=https://registry.npmjs.org/" >> ~/.npmrc
+          # Map your scope to the same registry
+          npm config set @ibrahimt2miraj:registry https://registry.npmjs.org/
 
-          echo "=== contents of ~/.npmrc ==="
-          sed 's/=.*/=<redacted>/' ~/.npmrc
+          # Inject your token into npm’s config
+          npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
 
+          # Ensure npm will always send the token
+          npm config set always-auth true
+
+          # Now test whoami & access
           echo "🔍 registry: $(npm config get registry)"
-          echo "🔍 whoami:" && npm whoami --registry=https://registry.npmjs.org/
+          echo "🔍 whoami:   $(npm whoami)"
+          echo "🔍 scope list:"
+          npm access list packages @ibrahimt2miraj
 
-          # cleanup
-          rm ~/.npmrc
-
+          # Cleanup sensitive config
+          npm config delete //registry.npmjs.org/:_authToken
+          npm config delete always-auth
+          
       - name: Verify npm whoami & access
         run: |
           echo "🔍 registry → $(npm config get registry)"
