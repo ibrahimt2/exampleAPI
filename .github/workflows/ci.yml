@@ -207,7 +207,7 @@ jobs:
           cat openapi-changelog.md >> changelog.md
           echo ""
 
-  publish:
+    publish:
     name: Publish Packages
     runs-on: ubuntu-latest
     needs: build
@@ -216,10 +216,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          fetch-depth:
-            0
+          fetch-depth: 0
 
-            # ─── Configure Git identity ───────────────────────────────────────
+      # ─── Configure Git identity (for any tagging) ─────────────────────
       - name: Set Git user for version bump
         run: |
           git config user.name  "ibrahimt2"
@@ -233,11 +232,15 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: Authenticate to npm
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+        run: |
+          # Write a fresh .npmrc that:
+          # 1) uses your token for the default registry
+          # 2) tells npm where your "@ibrahimt2miraj" scope lives
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          echo "@ibrahimt2miraj:registry=https://registry.npmjs.org/" >> ~/.npmrc
 
       - name: Publish npm package
-        run: |
-          npm publish
+        run: npm publish
 
       - name: Cleanup npm auth
         if: always()
