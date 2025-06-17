@@ -30,6 +30,34 @@ jobs:
       - name: Install Node dependencies
         run: npm install
 
+      - name: Sanity-check NPM_TOKEN
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # clear any old rc
+          rm -f ~/.npmrc
+
+          # write a clean one
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          echo "@ibrahimt2miraj:registry=https://registry.npmjs.org/" >> ~/.npmrc
+
+          echo "=== contents of ~/.npmrc ==="
+          sed 's/=.*/=<redacted>/' ~/.npmrc
+
+          echo "🔍 registry: $(npm config get registry)"
+          echo "🔍 whoami:" && npm whoami --registry=https://registry.npmjs.org/
+
+          # cleanup
+          rm ~/.npmrc
+
+      - name: Verify npm whoami & access
+        run: |
+          echo "🔍 registry → $(npm config get registry)"
+          echo "🔍 whoami   → $(npm whoami)"
+          echo "🔍 can access packages in your scope:"
+          npm access ls-packages @ibrahimt2miraj/exampleserverrepository
+
+
       # --- Python Setup & Flask ---
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -200,13 +228,6 @@ jobs:
             echo "❌ Version must be bumped (patch, minor, or major)."
             exit 1
           fi
-
-      - name: Verify npm whoami & access
-        run: |
-          echo "🔍 registry → $(npm config get registry)"
-          echo "🔍 whoami   → $(npm whoami)"
-          echo "🔍 can access packages in your scope:"
-          npm access ls-packages @ibrahimt2miraj/exampleserverrepository
 
       # --- OpenAPI Changelog ---
       - name: Generate OpenAPI changelog
