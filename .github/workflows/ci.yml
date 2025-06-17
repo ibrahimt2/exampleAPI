@@ -31,32 +31,19 @@ jobs:
         run: npm install
 
             # ─── Verify NPM publish rights ────────────────────────────────────
-      - name: Verify NPM auth & publish rights
+      - name: Verify NPM publish rights (dry run)
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # Point npm at the official registry
-          npm config set registry https://registry.npmjs.org/
+          # Configure auth for the dry run
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          echo "@ibrahimt2miraj:registry=https://registry.npmjs.org/" >> ~/.npmrc
 
-          # Map your scope to the same registry
-          npm config set @ibrahimt2miraj:registry https://registry.npmjs.org/
+          # Attempt a dry run publish
+          npm publish --dry-run --access public
 
-          # Inject your token into npm’s config
-          npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
-
-          # Ensure npm will always send the token
-          npm config set always-auth true
-
-          # Now test whoami & access
-          echo "🔍 registry: $(npm config get registry)"
-          echo "🔍 whoami:   $(npm whoami)"
-          echo "🔍 scope list:"
-          npm access list packages @ibrahimt2miraj
-
-          # Cleanup sensitive config
-          npm config delete //registry.npmjs.org/:_authToken
-          npm config delete always-auth
-          
+          # Cleanup
+          rm ~/.npmrc
       - name: Verify npm whoami & access
         run: |
           echo "🔍 registry → $(npm config get registry)"
