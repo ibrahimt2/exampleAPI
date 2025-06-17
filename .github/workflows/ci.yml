@@ -96,7 +96,7 @@ jobs:
         run: node scripts/check_versions_match.js
 
       - name: Install openapi-python-client
-        run: pip3 install openapi-python-client
+        run: pip3 install openapi-python-client==0.25.0
 
       - name: Install rsync
         run: sudo apt-get update && sudo apt-get install -y rsync
