@@ -4,7 +4,7 @@ import {
   createTodo,
   getTodoById,
   updateTodo,
-} from "../../node-client/sdk.gen";
+} from "../../node_client/sdk.gen";
 import { createClient, createConfig } from "@hey-api/client-axios";
 
 // These tests assume your Flask server is running at http://localhost:5000.

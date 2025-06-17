@@ -8,7 +8,7 @@ describe('device-command subscription handler', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    deviceCommandHandler = require('../../node-mqtt-client/src/api/handlers/device-command');
+    deviceCommandHandler = require('../../node_mqtt_client/src/api/handlers/device-command');
   });
 
   // One function is waiting for messages; this test checks if it actually gets called when a message comes in.
@@ -81,7 +81,7 @@ describe('device-command subscription handler', () => {
 
   // Simulate what the MQTT system would do: receive a buffer and convert it to JSON
   it('should simulate MQTT message decode and trigger subscribe handler', async () => {
-    const { client } = require('../../node-mqtt-client/src/api');
+    const { client } = require('../../node_mqtt_client/src/api');
     const testMiddleware = jest.fn();
     client.registerSubscribeMiddleware(testMiddleware);
 
@@ -95,7 +95,7 @@ describe('device-command subscription handler', () => {
     const buffer = Buffer.from(JSON.stringify(testPayload));
 
     // Simulate the adapter turning raw buffer into object and calling the handler
-    const handler = require('../../node-mqtt-client/src/api/handlers/device-command');
+    const handler = require('../../node_mqtt_client/src/api/handlers/device-command');
     await handler._subscribe({ message: JSON.parse(buffer.toString()) });
 
     expect(testMiddleware).toHaveBeenCalledWith(testPayload);

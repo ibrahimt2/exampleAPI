@@ -20,7 +20,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install Node dependencies
         run: npm install
@@ -37,9 +37,7 @@ jobs:
           pip install flask requests pytest pytest-cov pyyaml
           pip install -r requirements.txt
 
-
-
-       # --- OpenAPI Breaking Check ---
+        # --- OpenAPI Breaking Check ---
       - name: Install oasdiff
         run: |
           curl -sSL https://raw.githubusercontent.com/Tufin/oasdiff/main/install.sh | sh
@@ -104,10 +102,10 @@ jobs:
 
         # --- Reset generated clients to match Git state ---
       - name: Reset Node client directory to match Git state
-        run: git checkout -- node-client
+        run: git checkout -- node_client
 
       - name: Reset Python client directory to match Git state
-        run: git checkout -- python-client
+        run: git checkout -- python_client
 
       # --- Generate clients ---
       - name: Generate Node client
@@ -119,32 +117,32 @@ jobs:
       # --- Check if generated Node client is up-to-date ---
       - name: Check if Node client is up-to-date
         run: |
-          echo "--- Git status for node-client ---"
-          git status node-client
-          echo "--- Git diff for node-client ---"
-          git diff node-client
-          if [[ -n "$(git ls-files --others --exclude-standard node-client)" ]]; then
-            echo "❌ Untracked files detected in node-client. Client is out of date."
+          echo "--- Git status for node_client ---"
+          git status node_client
+          echo "--- Git diff for node_client ---"
+          git diff node_client
+          if [[ -n "$(git ls-files --others --exclude-standard node_client)" ]]; then
+            echo "❌ Untracked files detected in node_client. Client is out of date."
             exit 1
           fi
-          if ! git diff --quiet node-client; then
-            echo "❌ Changes detected in node-client. Client is out of date."
+          if ! git diff --quiet node_client; then
+            echo "❌ Changes detected in node_client. Client is out of date."
             exit 1
           fi
 
       # --- Check if generated Python client is up-to-date ---
       - name: Check if Python client is up-to-date
         run: |
-          echo "--- Git status for python-client ---"
-          git status python-client
-          echo "--- Git diff for python-client ---"
-          git diff python-client
-          if [[ -n "$(git ls-files --others --exclude-standard python-client)" ]]; then
-            echo "❌ Untracked files detected in python-client. Client is out of date."
+          echo "--- Git status for python_client ---"
+          git status python_client
+          echo "--- Git diff for python_client ---"
+          git diff python_client
+          if [[ -n "$(git ls-files --others --exclude-standard python_client)" ]]; then
+            echo "❌ Untracked files detected in python_client. Client is out of date."
             exit 1
           fi
-          if ! git diff --quiet python-client; then
-            echo "❌ Changes detected in python-client. Client is out of date."
+          if ! git diff --quiet python_client; then
+            echo "❌ Changes detected in python_client. Client is out of date."
             exit 1
           fi
 
@@ -183,3 +181,52 @@ jobs:
           echo "## 🔄 Changelog ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))" >> changelog.md
           cat openapi-changelog.md >> changelog.md
           echo ""
+
+  publish:
+    name: Publish Packages
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      # ─── npm publish ────────────────────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+          registry-url: https://registry.npmjs.org/
+
+      - name: Authenticate to npm
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Publish npm package
+        run: |
+          npm version patch
+          npm publish
+
+      - name: Cleanup npm auth
+        if: always()
+        run: rm ~/.npmrc
+
+      # ─── PyPI publish ────────────────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip build twine
+
+      - name: Build Python package
+        run: python -m build
+
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: python -m twine upload dist/*

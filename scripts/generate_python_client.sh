@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Usage: ./generate_python_client.sh openapi.yaml python-client
+# Usage: ./generate_python_client.sh openapi.yaml python_client
 
 set -e
 
