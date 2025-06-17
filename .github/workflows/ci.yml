@@ -238,6 +238,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      # ─── PyPI publish ────────────────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip build twine
+
+      - name: Build Python package
+        run: python -m build
+
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: python -m twine upload dist/*
+
       - name: Set up Node.js & npm auth
         uses: actions/setup-node@v4
         with:
@@ -267,22 +286,3 @@ jobs:
 
           # Cleanup
           rm ~/.npmrc
-
-      # ─── PyPI publish ────────────────────────────────────────────────
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-
-      - name: Install build tools
-        run: |
-          python -m pip install --upgrade pip build twine
-
-      - name: Build Python package
-        run: python -m build
-
-      - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: python -m twine upload dist/*
