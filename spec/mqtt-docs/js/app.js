@@ -3,7 +3,7 @@
   "asyncapi": "2.6.0",
   "info": {
     "title": "Example MQTT API",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "description": "Basic AsyncAPI spec for MQTT pub/sub"
   },
   "servers": {

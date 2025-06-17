@@ -261,12 +261,9 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # Configure auth for the dry run
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-          echo "@ibrahimt2miraj:registry=https://registry.npmjs.org/" >> ~/.npmrc
 
           # Attempt a dry run publish
-          npm publish --access public
+          npm publish --access public --verbose
 
           # Cleanup
           rm ~/.npmrc

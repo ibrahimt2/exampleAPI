@@ -1,7 +1,7 @@
 default:
   app:
     name: Example MQTT API
-    version: 1.0.8
+    version: 1.0.9
 
   broker:
 
