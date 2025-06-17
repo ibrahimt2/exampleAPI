@@ -1,6 +1,6 @@
 [project]
 name = "exampleserverrepository"
-version = "1.0.1"
+version = "1.0.3"
 description = "Generated REST & MQTT clients"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -10,17 +10,17 @@ dependencies = [
   "paho-mqtt>=1.6.0"
 ]
 
-[tool.setuptools]
-# Only these two modules will be included in the distribution:
-packages = [
-  "rest_client",
-  "mqtt_client"
-]
+[tool]
 
-[tool.setuptools.package-dir]
-# Map the import names to your on-disk folders:
-"rest_client" = "python_client/todo_api_client"
-"mqtt_client"  = "python_mqtt_client"
+  [tool.setuptools]
+  packages = [
+    "rest_client",
+    "mqtt_client"
+  ]
+
+    [tool.setuptools.package-dir]
+    rest_client = "python_client/todo_api_client"
+    mqtt_client = "python_mqtt_client"
 
 [build-system]
 requires = [

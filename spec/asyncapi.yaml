@@ -1,14 +1,12 @@
 asyncapi: 2.6.0
 info:
   title: Example MQTT API
-  version: '1.0.1'
+  version: '1.0.3'
   description: Basic AsyncAPI spec for MQTT pub/sub
-
 servers:
   production:
     url: mqtt://localhost:1884
     protocol: mqtt
-
 channels:
   sensor/data:
     description: Publishes temperature data from a device
@@ -30,7 +28,6 @@ channels:
             - deviceId
             - temperature
             - timestamp
-
   device/command:
     description: Receives command to control the device
     subscribe:
