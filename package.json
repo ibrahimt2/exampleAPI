@@ -11,7 +11,7 @@
     "generate-all": "npm run generate-node-client && npm run generate-python-client && npm run generate-mqtt-node-client && npm run generate-mqtt-python-client && npm run generate-rest-docs && npm run generate-mqtt-docs",
     "generate-node-client": "openapi-ts --input ./spec/server.yaml --output ./node_client --client @hey-api/client-axios",
     "generate-python-client": "scripts/generate_python_client.sh ./spec/server.yaml ./python_client",
-    "generate-mqtt-node-client": "asyncapi generate fromTemplate ./spec/asyncapi.yaml @asyncapi/nodejs-template -o ts-mqtt-client --param server=production",
+    "generate-mqtt-node-client": "asyncapi generate fromTemplate ./spec/asyncapi.yaml @asyncapi/nodejs-template -o node-mqtt-client --param server=production",
     "generate-mqtt-python-client": "npx @asyncapi/cli generate fromTemplate ./spec/asyncapi.yaml @asyncapi/python-paho-template -o python-mqtt-client",
     "generate-rest-docs": "npx @redocly/cli build-docs ./spec/server.yaml -o redoc-static.html",
     "generate-mqtt-docs": "ag ./spec/asyncapi.yaml @asyncapi/html-template -o ./spec/mqtt-docs",
