@@ -30,7 +30,7 @@ jobs:
       - name: Install Node dependencies
         run: npm install
 
-           # ─── Verify NPM publish rights ────────────────────────────────────
+      # ─── Verify NPM publish rights ────────────────────────────────────
       - name: Verify NPM publish rights (dry run)
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -238,27 +238,38 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Node.js & npm auth
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          registry-url: "https://registry.npmjs.org/"
+          scope: "@ibrahimt2miraj"
+          always-auth: true
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Install Node dependencies
+        run: npm install
+
       # ─── Configure Git identity ────────────────────────────────────────
       - name: Set Git user for version bump
         run: |
           git config user.name  "ibrahimt2"
           git config user.email "zerobottles@outlook.com"
 
-      # ─── npm publish ─────────────────────────────────────────────────
-      - name: Authenticate to npm
+      - name: NPM publish 
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # write a fresh .npmrc with your token & scope
+          # Configure auth for the dry run
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
           echo "@ibrahimt2miraj:registry=https://registry.npmjs.org/" >> ~/.npmrc
 
-      - name: Publish npm package
-        run: npm publish --access public
+          # Attempt a dry run publish
+          npm publish --access public
 
-      - name: Cleanup npm auth
-        if: always()
-        run: rm ~/.npmrc
+          # Cleanup
+          rm ~/.npmrc
 
       # ─── PyPI publish ────────────────────────────────────────────────
       - name: Set up Python
