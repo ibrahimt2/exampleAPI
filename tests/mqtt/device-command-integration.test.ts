@@ -28,7 +28,7 @@ afterAll(async () => {
 })
 
 const initClient = async () => {
-  const { client } = require('../../node-mqtt-client/src/api')
+  const { client } = require('../../node_mqtt_client/src/api')
   await client.init()
   return client
 }
@@ -44,7 +44,7 @@ describe('sensor-data MQTT integration', () => {
 
   it('should call registered middleware when a message is published', async () => {
     const client = await initClient()
-    const handler = require('../../node-mqtt-client/src/api/handlers/sensor-data')
+    const handler = require('../../node_mqtt_client/src/api/handlers/sensor-data')
 
     const topic = 'sensor/data'
     const testPayload = {
@@ -71,7 +71,7 @@ describe('sensor-data MQTT integration', () => {
 
   it('should not call middleware for an invalid message', async () => {
     const client = await initClient()
-    const handler = require('../../node-mqtt-client/src/api/handlers/sensor-data')
+    const handler = require('../../node_mqtt_client/src/api/handlers/sensor-data')
 
     const topic = 'sensor/data'
     const invalidPayload = { deviceId: 'abc123' } // missing fields
@@ -91,7 +91,7 @@ describe('sensor-data MQTT integration', () => {
 
   it('should handle malformed JSON payloads without crashing', async () => {
     const client = await initClient()
-    const handler = require('../../node-mqtt-client/src/api/handlers/sensor-data')
+    const handler = require('../../node_mqtt_client/src/api/handlers/sensor-data')
 
     const topic = 'sensor/data'
 
@@ -109,7 +109,7 @@ describe('sensor-data MQTT integration', () => {
   })
   it('should call all registered middleware functions when a message is published', async () => {
     const client = await initClient()
-    const handler = require('../../node-mqtt-client/src/api/handlers/sensor-data')
+    const handler = require('../../node_mqtt_client/src/api/handlers/sensor-data')
 
     const topic = 'sensor/data'
     const testPayload = {
