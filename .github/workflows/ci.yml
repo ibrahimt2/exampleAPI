@@ -200,19 +200,18 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # write temp npmrc (token is masked, not shown)
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-          echo "@ibrahimt2miraj:registry=https://registry.npmjs.org/" >> ~/.npmrc
+          # Point npm at the public registry
+          npm config set registry https://registry.npmjs.org/
 
-          # confirm who we are
+          # Inject your token for that registry
+          npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
+
+          # sanity-check who we're logged in as
           echo "🔍 npm whoami:" && npm whoami
 
-          # confirm you have write access
-          echo "🔍 npm access ls-packages @ibrahimt2miraj/exampleserverrepository"
+          # sanity-check that we can see your scoped package
+          echo "🔍 npm access ls-packages @ibrahimt2miraj/exampleserverrepository" 
           npm access ls-packages @ibrahimt2miraj/exampleserverrepository
-
-          # cleanup so no token remains
-          rm ~/.npmrc
 
       # --- OpenAPI Changelog ---
       - name: Generate OpenAPI changelog
