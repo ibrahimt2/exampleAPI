@@ -20,7 +20,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
+          registry-url: https://registry.npmjs.org/
+          scope: "@ibrahimt2miraj"
           node-version: "18"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install Node dependencies
         run: npm install
