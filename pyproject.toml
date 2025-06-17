@@ -1,6 +1,6 @@
 [project]
 name = "exampleserverrepository"
-version = "1.0.2"
+version = "1.0.3"
 description = "Generated REST & MQTT clients"
 readme = "README.md"
 requires-python = ">=3.9"

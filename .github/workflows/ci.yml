@@ -169,9 +169,12 @@ jobs:
         run: npm run build:dev
 
       - name: Run Python tests with coverage
-        run: npm run python-test
+        run:
+          npm run python-test
 
+          # ─── Enforce manual semver bump (only on PR) ───────────────────
       - name: Ensure version bumped at least patch
+        if: ${{ github.event_name == 'pull_request' }}
         run: |
           # Get remote vs local versions
           REMOTE=$(git show origin/main:package.json | yq '.version')
