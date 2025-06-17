@@ -17,12 +17,13 @@ jobs:
           fetch-depth: 0
 
       # --- Node.js Setup ---
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Set up Node.js & npm auth
+        uses: actions/setup-node@v3
         with:
-          registry-url: https://registry.npmjs.org/
-          scope: "@ibrahimt2miraj"
           node-version: "18"
+          registry-url: "https://registry.npmjs.org/"
+          scope: "@ibrahimt2miraj"
+          always-auth: true
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -200,21 +201,11 @@ jobs:
             exit 1
           fi
 
-      - name: Verify npm auth & publish rights
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Verify npm whoami & access
         run: |
-          # Point npm at the public registry
-          npm config set registry https://registry.npmjs.org/
-
-          # Inject your token for that registry
-          npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
-
-          # sanity-check who we're logged in as
-          echo "🔍 npm whoami:" && npm whoami
-
-          # sanity-check that we can see your scoped package
-          echo "🔍 npm access ls-packages @ibrahimt2miraj/exampleserverrepository" 
+          echo "🔍 registry → $(npm config get registry)"
+          echo "🔍 whoami   → $(npm whoami)"
+          echo "🔍 can access packages in your scope:"
           npm access ls-packages @ibrahimt2miraj/exampleserverrepository
 
       # --- OpenAPI Changelog ---
