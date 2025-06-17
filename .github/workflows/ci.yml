@@ -173,9 +173,9 @@ jobs:
 
       - name: Ensure version bumped at least patch
         run: |
-          # Get remote vs local versions
-          REMOTE=$(git show origin/main:package.json | yq '.version')
-          LOCAL=$(yq '.version' package.json)
+          # Get remote vs local versions (raw)
+          REMOTE=$(git show origin/main:package.json | yq -r '.version')
+          LOCAL=$(yq -r '.version' package.json)
           echo "Remote version: $REMOTE"
           echo "Local  version: $LOCAL"
 
