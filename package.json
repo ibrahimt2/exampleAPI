@@ -1,6 +1,6 @@
 {
   "name": "@ibrahimt2miraj/exampleserverrepository",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "index.js",
   "files": [
     "node_client/**/*",
@@ -17,10 +17,10 @@
     "node-test": "jest --coverage",
     "python-test": "PYTHONPATH=python_client python3 -m pytest --cov=todo_api_client.api --cov-report=term-missing --cov-fail-under=80 tests/integration",
     "generate-all": "npm run generate-node-client && npm run generate-python-client && npm run generate-mqtt-node-client && npm run generate-mqtt-python-client && npm run generate-rest-docs && npm run generate-mqtt-docs",
-    "generate-node-client": "openapi-ts --input ./spec/server.yaml --output ./node_client --client @hey-api/client-axios",
+    "generate-node-client": "openapi-ts --input ./spec/server.yaml --output ./node_client --client @hey-api/client-axios --force",
     "generate-python-client": "scripts/generate_python_client.sh ./spec/server.yaml ./python_client",
-    "generate-mqtt-node-client": "asyncapi generate fromTemplate ./spec/asyncapi.yaml @asyncapi/nodejs-template -o node_mqtt_client --param server=production",
-    "generate-mqtt-python-client": "npx @asyncapi/cli generate fromTemplate ./spec/asyncapi.yaml @asyncapi/python-paho-template -o python_mqtt_client",
+    "generate-mqtt-node-client": "asyncapi generate fromTemplate ./spec/asyncapi.yaml @asyncapi/nodejs-template -o node_mqtt_client --param server=production --force-write",
+    "generate-mqtt-python-client": "npx @asyncapi/cli generate fromTemplate ./spec/asyncapi.yaml @asyncapi/python-paho-template -o python_mqtt_client --force-write",
     "generate-rest-docs": "npx @redocly/cli build-docs ./spec/server.yaml -o redoc-static.html",
     "generate-mqtt-docs": "ag ./spec/asyncapi.yaml @asyncapi/html-template -o ./spec/mqtt-docs",
     "build:dev": "tsc --noEmit",
@@ -52,6 +52,7 @@
     "@types/jest": "^29.5.14",
     "jest": "^29.7.0",
     "toml": "^3.0.0",
+    "tomlify-j0.4": "^3.0.0",
     "ts-jest": "^29.3.1"
   }
 }
