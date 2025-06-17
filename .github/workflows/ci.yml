@@ -239,6 +239,11 @@ jobs:
             echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
             echo "@ibrahimt2miraj:registry=https://registry.npmjs.org/" >> ~/.npmrc
 
+        - name: Verify npm auth & registry
+          run: |
+            echo "registry: $(npm config get registry)"
+            echo "whoami: $(npm whoami)"
+
         - name: Publish npm package
           run: npm publish --access public
 
