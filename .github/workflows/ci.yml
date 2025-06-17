@@ -104,10 +104,10 @@ jobs:
 
         # --- Reset generated clients to match Git state ---
       - name: Reset Node client directory to match Git state
-        run: git checkout -- node_client
+        run: git checkout -- node-client
 
       - name: Reset Python client directory to match Git state
-        run: git checkout -- python_client
+        run: git checkout -- python-client
 
       # --- Generate clients ---
       - name: Generate Node client
@@ -119,32 +119,32 @@ jobs:
       # --- Check if generated Node client is up-to-date ---
       - name: Check if Node client is up-to-date
         run: |
-          echo "--- Git status for node_client ---"
-          git status node_client
-          echo "--- Git diff for node_client ---"
-          git diff node_client
-          if [[ -n "$(git ls-files --others --exclude-standard node_client)" ]]; then
-            echo "❌ Untracked files detected in node_client. Client is out of date."
+          echo "--- Git status for node-client ---"
+          git status node-client
+          echo "--- Git diff for node-client ---"
+          git diff node-client
+          if [[ -n "$(git ls-files --others --exclude-standard node-client)" ]]; then
+            echo "❌ Untracked files detected in node-client. Client is out of date."
             exit 1
           fi
-          if ! git diff --quiet node_client; then
-            echo "❌ Changes detected in node_client. Client is out of date."
+          if ! git diff --quiet node-client; then
+            echo "❌ Changes detected in node-client. Client is out of date."
             exit 1
           fi
 
       # --- Check if generated Python client is up-to-date ---
       - name: Check if Python client is up-to-date
         run: |
-          echo "--- Git status for python_client ---"
-          git status python_client
-          echo "--- Git diff for python_client ---"
-          git diff python_client
-          if [[ -n "$(git ls-files --others --exclude-standard python_client)" ]]; then
-            echo "❌ Untracked files detected in python_client. Client is out of date."
+          echo "--- Git status for python-client ---"
+          git status python-client
+          echo "--- Git diff for python-client ---"
+          git diff python-client
+          if [[ -n "$(git ls-files --others --exclude-standard python-client)" ]]; then
+            echo "❌ Untracked files detected in python-client. Client is out of date."
             exit 1
           fi
-          if ! git diff --quiet python_client; then
-            echo "❌ Changes detected in python_client. Client is out of date."
+          if ! git diff --quiet python-client; then
+            echo "❌ Changes detected in python-client. Client is out of date."
             exit 1
           fi
 
