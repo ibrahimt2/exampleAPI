@@ -196,6 +196,24 @@ jobs:
             exit 1
           fi
 
+      - name: Verify npm auth & publish rights
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # write temp npmrc (token is masked, not shown)
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          echo "@ibrahimt2miraj:registry=https://registry.npmjs.org/" >> ~/.npmrc
+
+          # confirm who we are
+          echo "🔍 npm whoami:" && npm whoami
+
+          # confirm you have write access
+          echo "🔍 npm access ls-packages @ibrahimt2miraj/exampleserverrepository"
+          npm access ls-packages @ibrahimt2miraj/exampleserverrepository
+
+          # cleanup so no token remains
+          rm ~/.npmrc
+
       # --- OpenAPI Changelog ---
       - name: Generate OpenAPI changelog
         run: |
