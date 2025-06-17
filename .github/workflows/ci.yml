@@ -240,7 +240,7 @@ jobs:
             echo "@ibrahimt2miraj:registry=https://registry.npmjs.org/" >> ~/.npmrc
 
         - name: Publish npm package
-          run: npm publish
+          run: npm publish --access public
 
         - name: Cleanup npm auth
           if: always()
@@ -262,5 +262,5 @@ jobs:
         - name: Publish to PyPI
           env:
             TWINE_USERNAME: __token__
-            TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+            TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
           run: python -m twine upload dist/*
