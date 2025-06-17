@@ -30,7 +30,7 @@ jobs:
       - name: Install Node dependencies
         run: npm install
 
-            # ─── Verify NPM publish rights ────────────────────────────────────
+           # ─── Verify NPM publish rights ────────────────────────────────────
       - name: Verify NPM publish rights (dry run)
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -44,13 +44,6 @@ jobs:
 
           # Cleanup
           rm ~/.npmrc
-      - name: Verify npm whoami & access
-        run: |
-          echo "🔍 registry → $(npm config get registry)"
-          echo "🔍 whoami   → $(npm whoami)"
-          echo "🔍 can access packages in your scope:"
-          npm access ls-packages @ibrahimt2miraj/exampleserverrepository
-
 
       # --- Python Setup & Flask ---
       - name: Set up Python
@@ -235,64 +228,53 @@ jobs:
           echo ""
 
   publish:
-      name: Publish Packages
-      runs-on: ubuntu-latest
-      needs: build
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v2
-          with:
-            fetch-depth: 0
+    name: Publish Packages
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-        # ─── Configure Git identity (for any tagging) ─────────────────────
-        - name: Set Git user for version bump
-          run: |
-            git config user.name  "ibrahimt2"
-            git config user.email "zerobottles@outlook.com"
+      # ─── Configure Git identity ────────────────────────────────────────
+      - name: Set Git user for version bump
+        run: |
+          git config user.name  "ibrahimt2"
+          git config user.email "zerobottles@outlook.com"
 
-        # ─── npm publish ────────────────────────────────────────────────
-        - name: Set up Node.js
-          uses: actions/setup-node@v2
-          with:
-            node-version: "18"
-            registry-url: https://registry.npmjs.org/
+      # ─── npm publish ─────────────────────────────────────────────────
+      - name: Authenticate to npm
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # write a fresh .npmrc with your token & scope
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          echo "@ibrahimt2miraj:registry=https://registry.npmjs.org/" >> ~/.npmrc
 
-        - name: Authenticate to npm
-          run: |
-            # Write a fresh .npmrc that:
-            # 1) uses your token for the default registry
-            # 2) tells npm where your "@ibrahimt2miraj" scope lives
-            echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-            echo "@ibrahimt2miraj:registry=https://registry.npmjs.org/" >> ~/.npmrc
+      - name: Publish npm package
+        run: npm publish --access public
 
-        - name: Verify npm auth & registry
-          run: |
-            echo "registry: $(npm config get registry)"
-            echo "whoami: $(npm whoami)"
+      - name: Cleanup npm auth
+        if: always()
+        run: rm ~/.npmrc
 
-        - name: Publish npm package
-          run: npm publish --access public
+      # ─── PyPI publish ────────────────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
 
-        - name: Cleanup npm auth
-          if: always()
-          run: rm ~/.npmrc
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip build twine
 
-        # ─── PyPI publish ────────────────────────────────────────────────
-        - name: Set up Python
-          uses: actions/setup-python@v2
-          with:
-            python-version: "3.x"
+      - name: Build Python package
+        run: python -m build
 
-        - name: Install build tools
-          run: |
-            python -m pip install --upgrade pip build twine
-
-        - name: Build Python package
-          run: python -m build
-
-        - name: Publish to PyPI
-          env:
-            TWINE_USERNAME: __token__
-            TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-          run: python -m twine upload dist/*
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: python -m twine upload dist/*
