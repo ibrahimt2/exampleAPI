@@ -8,6 +8,7 @@
   "scripts": {
     "node-test": "jest --coverage",
     "python-test": "PYTHONPATH=python_client python3 -m pytest --cov=todo_api_client.api --cov-report=term-missing --cov-fail-under=80 tests/integration",
+    "generate-all": "npm run generate-node-client && npm run generate-python-client && npm run generate-mqtt-node-client && npm run generate-mqtt-python-client && npm run generate-rest-docs && npm run generate-mqtt-docs",
     "generate-node-client": "openapi-ts --input ./spec/server.yaml --output ./node_client --client @hey-api/client-axios",
     "generate-python-client": "scripts/generate_python_client.sh ./spec/server.yaml ./python_client",
     "generate-mqtt-node-client": "asyncapi generate fromTemplate ./spec/asyncapi.yaml @asyncapi/nodejs-template -o ts-mqtt-client --param server=production",
