@@ -7,8 +7,8 @@ and updating existing todos. The API conforms to an OpenAPI 3.0.3 specification
 with custom extensions like `x-operationname` to assist in client code generation.
 
 Endpoints:
-  GET    /todos           - Retrieve a list of todos
-  POST   /todos           - Create a new todo
+  GET    /todos             - Retrieve a list of todos
+  POST   /todos             - Create a new todo
   GET    /todos/<todoId>    - Retrieve a specific todo
   PUT    /todos/<todoId>    - Update a specific todo
 """
@@ -45,8 +45,7 @@ def add_todo():
 
     Request JSON Body:
     {
-        "title": "string",          # Required
-        "completed": false          # Optional, defaults to false
+        "title": "string"   # Required
     }
 
     Returns:
@@ -59,11 +58,9 @@ def add_todo():
     if not data or 'title' not in data:
         abort(400, description="Missing required field 'title'")
     
-    # Create a new todo item; if 'completed' is not provided, default to False.
     todo = {
         'id': next_id,
-        'title': data['title'],
-        'completed': data.get('completed', False)
+        'title': data['title']
     }
     todos.append(todo)
     next_id += 1
@@ -74,9 +71,6 @@ def fetch_todo(todoId):
     """
     GET /todos/<todoId>
     Retrieve a specific todo item by ID.
-
-    Path Parameters:
-        todoId (int): ID of the todo to retrieve.
 
     Returns:
         200 OK with the todo object if found.
@@ -95,13 +89,9 @@ def modify_todo(todoId):
     PUT /todos/<todoId>
     Update an existing todo item by ID.
 
-    Path Parameters:
-        todoId (int): ID of the todo to update.
-
     Request JSON Body:
     {
-        "title": "string",          # Required
-        "completed": true|false     # Required
+        "title": "string"   # Required
     }
 
     Returns:
@@ -112,16 +102,14 @@ def modify_todo(todoId):
     x-operationname: modifyTodo
     """
     data = request.get_json()
-    if not data or 'title' not in data or 'completed' not in data:
-        abort(400, description="Missing required fields 'title' and/or 'completed'")
+    if not data or 'title' not in data:
+        abort(400, description="Missing required field 'title'")
     
     todo = next((item for item in todos if item['id'] == todoId), None)
     if todo is None:
         abort(404, description="Todo not found")
     
-    # Update the todo item
     todo['title'] = data['title']
-    todo['completed'] = data['completed']
     return jsonify(todo), 200
 
 if __name__ == '__main__':
