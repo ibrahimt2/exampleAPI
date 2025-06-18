@@ -285,6 +285,3 @@ jobs:
 
           # Attempt a dry run publish
           npm publish --access public --verbose
-
-          # Cleanup
-          rm ~/.npmrc
