@@ -1,6 +1,6 @@
 {
   "name": "@ibrahimt2miraj/exampleserverrepository",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "main": "index.js",
   "files": [
     "node_client/**/*",
@@ -8,7 +8,7 @@
   ],
   "exports": {
     "./rest-client": "./node_client/index.js",
-    "./mqtt-client": "./node_mqtt_client/index.js"
+    "./mqtt-client": "./node_mqtt_client/src/api/index.js"
   },
   "directories": {
     "test": "tests"

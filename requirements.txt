@@ -5,3 +5,4 @@ python-dateutil>=2.8.0
 pytest-cov
 paho-mqtt
 pytest-asyncio>=0.21.0
+flask_cors

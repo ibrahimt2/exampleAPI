@@ -55,7 +55,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flask requests pytest pytest-cov pyyaml
+          pip install flask requests pytest pytest-cov pyyaml flask_cors
           pip install -r requirements.txt
 
         # --- OpenAPI Breaking Check ---
@@ -285,6 +285,3 @@ jobs:
 
           # Attempt a dry run publish
           npm publish --access public --verbose
-
-          # Cleanup
-          rm ~/.npmrc
